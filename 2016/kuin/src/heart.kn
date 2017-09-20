@@ -5,7 +5,7 @@ end func
 
 func printHeart(r: int)
     for y(r * 3 / 2, -r, -1)
-		var str : []char :: ""
+		var str: []char :: ""
 		for x(-2 * r, 2 * r)
 			func isInsideHeart(x: float, y: float): bool
 				ret x ^ 2.0 + (y - (x ^ (2.0 / 3.0))) ^ 2.0 <= 1.0
