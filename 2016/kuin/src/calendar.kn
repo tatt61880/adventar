@@ -34,8 +34,8 @@ func main()
 	end while
 	func num2str(num: int): []char
 		var retVal: []char :: "xx"
-		do retVal[1] :: ('0' $ int + (num % 10)) $ char
-		do retVal[0] :: ('0' $ int + (num / 10)) $ char
+		do retVal[1] :: '0'.offset(num % 10)
+		do retVal[0] :: '0'.offset(num / 10)
 		do retVal[0] :: retVal[0] = '0' ?(' ', retVal[0])
 		ret retVal
 	end func
