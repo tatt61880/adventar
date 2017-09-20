@@ -9,8 +9,8 @@ var rot_y: float
 func main()
 	const wndSizeX: int :: (@centerX * 2.0) $ int
 	const wndSizeY: int :: (@centerY * 2.0) $ int
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, wndSizeX, wndSizeY, "Paralympic 2020")
-	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeX, wndSizeY, %fix, %fix, false)
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, wndSizeX, wndSizeY, "Paralympic 2020")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeX, wndSizeY, %scale, %scale, false)
 	class Point()
 		+var x: float
 		+var y: float
@@ -96,7 +96,7 @@ func main()
 		do draw@clearColor(16#FFFFFFFF)
 		for j(0, @num / 2 - 2)
 			for i(0, @num - 1)
-				var index: int :: i * 2 + ((j % 2 = 0) ?(0, 1))
+				var index: int :: i * 2 + j % 2
 				var rot: float :: 2.0 * lib@pi * index $ float / (@num * 2) $ float
 				var cx: float :: r[j] * lib@cos(rot) + @centerX
 				var cy: float :: r[j] * lib@sin(rot) + @centerY
