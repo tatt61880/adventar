@@ -142,7 +142,7 @@ EOD;
 					$txt_src =  htmlspecialchars(file_get_contents($expand_url));
 					$txt = <<< EOD
 <span style="background-color:#fff8f0; padding:0 10px 0 10px"><a href="../output_txt/$expand_filename">出力結果</a></span>
-<pre style="background-color:#fff8f0; margin: 0px -10px 0px -10px; padding:0px 20px 0px 20px;">$txt_src</pre>
+<pre style="background-color:#fff8f0; margin: 0px -10px 0px -10px; padding:0px 20px 0px 20px; overflow:auto;">$txt_src</pre>
 EOD;
 					$main_html = preg_replace("/^([\d\D]*)###(\w*.kn.txt)###([\d\D]*)$/", "\${1}$txt\${3}", $main_html);
 				}else{
