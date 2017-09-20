@@ -1,0 +1,228 @@
+{難解プログラミング言語「Befunge」のコードを実行します。}
+func main()
+	{Hello, world!を出力します。Wikipediaに掲載されていたBefungeのコードです。}
+	do @befunge(["v @_       v",
+				|">0\"!dlrow\"v",
+				|"v  :#     <",
+				|">\" ,olleH\" v",
+				|"   ^       <"])
+
+	{7の階乗の値を出力します。Wikipediaに掲載されていたBefungeのコードです。}
+	do @befunge(["7 100p:v",
+				|"v *g00:_00g.@",
+				|">00p1-:^"])
+
+	{
+	TokusiNさんのHello, world!です。(1つ目)
+	http://golf.shinh.org/reveal.rb?Hello+broken+keyboard/TokusiN_1370797591&bef
+	読みやすさのために行を分けていますが、1行の文字列です。
+	}
+	do @befunge(["!:::::++:++:+:++:++:+::!:p::!!:p::!!:+:p::!!::++:p:!!:+:+:p!::+:++::++:+:+::!:!p" ~
+				|"!!!::+:+:!!:+++:+:+:+:+::!!:p++:+::!:!::++:!!:p+!!::++::!!::p+!!::+:!!::p+::!!::" ~
+				|"!!!:++:::++:+:+:+:+::!p++:!!::++::!!:+++:+:+::!!:p+!!:+::+:!!::++:++:+:+:+:::!p+" ~
+				|"!!!!++::!!::+:+:+:+:+:!!:++:+:+:!!::++::++:+:++:+:+:::!!:++:++::!!::++:+:+:!!::+" ~
+				|":+:!!!::+:+::!!:++:+:++:+:+:++::::!!::++::+:+:++:+:+::!!:++::++:+:++:+:+:::!!:++" ~
+				|"!::!!++:+:+:+:!!:+:+:+:+:+:+:!!::+:++:p"
+				|])
+
+	{
+	TokusiNさんのHello, world!です。(2つ目)
+	http://golf.shinh.org/reveal.rb?Hello+broken+keyboard/TokusiN(AllAscii)_1370537872&bef
+	}
+	do @befunge(["\"v1AQ$(.TD4/02\\L<3uwt{}789prs:;=xyz?BC!%&EFJ*)'KMNijdOPRnoqSUVkmlWXYf56Z[]GIH^`a",
+				|"b> #,+-_@cegh|~"])
+end func
+
+func befunge(src_: [][]char)
+	class Vec()
+		+var x: int
+		+var y: int
+		+func init(x: int, y: int): Vec
+			do me.x :: x
+			do me.y :: y
+			ret me
+		end func
+	end class
+	func normalize(src: [][]char): [][]char
+		var res: [][]char :: #[25][]char
+		for i(0, 24)
+			do res[i] :: "                                                                                "
+		end for
+		var w: int :: 0
+		var h: int :: 0
+		for i(0, ^src - 1)
+			for j(0, ^src[i] - 1)
+				if(w = 80)
+					do w :: 0
+					do h :+ 1
+				end if
+				do res[h][w] :: src[i][j]
+				do w :+ 1
+			end for
+			do w :: 0
+			do h :+ 1
+		end for
+		ret res
+	end func
+	var src: [][]char :: normalize(src_)
+	var w: int :: ^src[0]
+	var h: int :: ^src
+	{
+	do cui@print("==================================================================================\n")
+	for i(0, ^src - 1)
+		do cui@print("[\{src[i]}]\n")
+	end for
+	do cui@print("==================================================================================\n")
+	}
+	var p: Vec :: (#Vec).init(0, 0)
+	var d: Vec :: (#Vec).init(1, 0)
+	var st: CMyIntStack :: #CMyIntStack
+	class CMyIntStack() {スタックが空の時にpopされると0を返すようなスタックです。}
+		var st: stack<int>
+		*func ctor()
+			do me.st :: #stack<int>
+		end func
+		+func pop(): int
+			if(^me.st = 0)
+				ret 0 {スタックが空なので0を返します。}
+			else
+				ret me.st.get()
+			end if
+		end func
+		+func push(v: int)
+			do me.st.add(v)
+		end func
+	end class
+
+	var max_count: int :: 10000
+	var count: int :: 0
+	var xxx: bool :: false
+	var strFlag: bool :: false
+	while a(true)
+		do count :+ 1
+		do p.x :: (p.x + w) % w
+		do p.y :: (p.y + h) % h
+		if(count = max_count)
+			do cui@print("\n無限ループ回避のために、繰返し回数を" ~ max_count.toStr() ~ "回までに制限しています。\n")
+			ret
+		end if
+
+		if(xxx)
+			do xxx :: false
+		elif(strFlag)
+			if(src[p.y][p.x] = '"')
+				do strFlag :: false
+			else
+				do st.push(src[p.y][p.x] $ int)
+			end if
+		else
+			var x: int
+			var y: int
+			switch c(src[p.y][p.x])
+			{制御}
+			case '<'
+				do d :: (#Vec).init(-1,  0)
+			case '>'
+				do d :: (#Vec).init( 1,  0)
+			case '^'
+				do d :: (#Vec).init( 0, -1)
+			case 'v'
+				do d :: (#Vec).init( 0,  1)
+			case '_'
+				do d :: (#Vec).init((st.pop() = 0) ?(1, -1), 0)
+			case '|'
+				do d :: (#Vec).init(0, (st.pop() = 0) ?(1, -1))
+			case '?'
+				switch(lib@rnd(0, 3))
+				case 0
+					do d :: (#Vec).init(-1,  0)
+				case 1
+					do d :: (#Vec).init( 1,  0)
+				case 2
+					do d :: (#Vec).init( 0, -1)
+				case 3
+					do d :: (#Vec).init( 0,  1)
+				end switch
+				assert false
+			case ' '
+			case '#'
+				do xxx :: true
+			case '@'
+				do cui@print("\n")
+				ret
+			{リテラル}
+			case '0' to '9'
+				do st.push(c $ int - '0' $ int)
+			case '"'
+				do strFlag :: true
+			{入出力}
+			case '&'
+				{FIXME}
+				do cui@print("未実装です。(&)")
+				assert false
+			case '~'
+				{FIXME}
+				do cui@print("未実装です。(~)")
+				assert false
+			case '.'
+				do cui@print(st.pop().toStr() ~ " ")
+			case ','
+				do cui@print([st.pop() $ char])
+			{算術および論理演算}
+			case '+'
+				do y :: st.pop()
+				do x :: st.pop()
+				do st.push(x + y)
+			case '-'
+				do y :: st.pop()
+				do x :: st.pop()
+				do st.push(x - y)
+			case '*'
+				do y :: st.pop()
+				do x :: st.pop()
+				do st.push(x * y)
+			case '/'
+				do y :: st.pop()
+				do x :: st.pop()
+				do st.push(x / y)
+			case '%'
+				do y :: st.pop()
+				do x :: st.pop()
+				do st.push(x % y)
+			case '`'
+				do y :: st.pop()
+				do x :: st.pop()
+				do st.push((x > y) ?(1, 0))
+			case '!'
+				do st.push(st.pop() = 0 ?(1, 0))
+			{スタック操作}
+			case ':'
+				var s: int :: st.pop()
+				do st.push(s)
+				do st.push(s)
+			case '\\'
+				do y :: st.pop()
+				do x :: st.pop()
+				do st.push(y)
+				do st.push(x)
+			case '$'
+				do st.pop()
+			{メモリ操作}
+			case 'g'
+				do y :: st.pop()
+				do x :: st.pop()
+				do st.push(src[y][x] $ int)
+			case 'p'
+				do y :: st.pop()
+				do x :: st.pop()
+				var v: int :: st.pop()
+				do src[y][x] :: v $ char
+			default
+				do cui@print("予期せぬ文字です。")
+				assert false
+			end switch
+		end if
+		do p.x :: (p.x + d.x + w) % w
+		do p.y :: (p.y + d.y + h) % h
+	end while
+end func

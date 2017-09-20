@@ -1,0 +1,218 @@
+{ マインスイーパ }
+const size: float :: 30.0
+const width: int :: 10
+const height: int :: 6
+const wndW: int :: @size $ int * (@width + 2)
+const wndH: int :: @size $ int * (@height + 2)
+const Ratio: float :: 0.25
+const Mines: int :: ((@width * @height)$ float * @Ratio)$ int
+const numNotMines: int :: @width * @height - @Mines
+
+var font: draw@Font
+var squares: [][]@Square
+var numOpen: int
+var gameovered: bool
+var gameCleared: bool
+var clickFlagL: bool
+var clickFlagR: bool
+
+class Square()
+	+var mine: int
+	+var state: @State
+	+var number: int
+end class
+
+enum State
+	notClicked
+	clicked
+	flagged
+end enum
+
+func main()
+	do @font :: draw@makeFont("Meiryo", (@size / 1.8) $ int, false, false, true, 0.0)
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, @wndW, @wndH, "Mainsweeper")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @wndW, @wndH, %fix, %fix, false)
+	do drawMain.onMouseDownL :: drawMainOnMouseDownL
+	do drawMain.onMouseDownR :: drawMainOnMouseDownR
+	do drawMain.onMouseUpL :: drawMainOnMouseUpL
+	do drawMain.onMouseUpR :: drawMainOnMouseUpR
+
+	while restart(wnd@act())
+		do @gameovered :: false
+		do @gameCleared :: false
+		do @numOpen :: 0
+		do initSquares()
+		do setMines(@Mines)
+		do @clickFlagL :: false
+		do @clickFlagR :: false
+		while a(wnd@act())
+			do drawSquares()
+			do draw@render(30)
+			if(input@pad(0, %a) = 1)
+				skip restart
+			end if
+		end while
+	end while
+
+	{初期化}
+	func initSquares()
+		do @squares :: #[@height + 2, @width + 2]@Square
+		for i(0, ^@squares - 1)
+			for j(0, ^@squares[i] - 1)
+				do @squares[i][j] :: #@Square
+			end for
+		end for
+	end func
+
+	{地雷をセット}
+	func setMines(num: int)
+		var mineFlags: []int :: #[@width * @height]int
+		for i(0, num - 1)
+			do mineFlags[i] :: 1
+		end for
+		do mineFlags.shuffle()
+		for i(0, ^mineFlags - 1)
+			do @squares[i / @width + 1][i % @width + 1].mine :: mineFlags[i]
+		end for
+		for row(1, @height)
+			for col(1, @width)
+				do @squares[row][col].number :: -@squares[row][col].mine
+				for r(-1, 1)
+					for c(-1, 1)
+						do @squares[row][col].number :+ @squares[row + r][col + c].mine
+					end for
+				end for
+			end for
+		end for
+	end func
+
+	{入力チェック}
+	func drawMainOnMouseDownL(wnd: wnd@WndBase, x: int, y: int)
+		do @clickFlagL :: true
+	end func
+
+	func drawMainOnMouseDownR(wnd: wnd@WndBase, x: int, y: int)
+		do @clickFlagR :: true
+	end func
+
+	func drawMainOnMouseUpL(wnd: wnd@WndBase, x: int, y: int)
+		do @clickFlagL :: false
+		if(@gameovered)
+			ret
+		end if
+		var col: int :: x / @size $ int
+		var row: int :: y / @size $ int
+		do @open(row, col)
+		if(@clickFlagR)
+			do @clickLR(row, col)
+		end if
+	end func
+
+	func drawMainOnMouseUpR(wnd: wnd@WndBase, x: int, y: int)
+		do @clickFlagR :: false
+		if(@gameovered)
+			ret
+		end if
+		var col: int :: x / @size $ int
+		var row: int :: y / @size $ int
+		if(@inArea(row, col))
+			switch(@squares[row][col].state)
+			case %notClicked
+				do @squares[row][col].state :: %flagged
+			case %clicked
+			case %flagged
+				do @squares[row][col].state :: %notClicked
+			end switch
+		end if
+		if(@clickFlagL)
+			do @clickLR(row, col)
+		end if
+	end func
+
+	{描画}
+	func drawSquares()
+		for row(1, @height)
+			for col(1, @width)
+				switch s(@squares[row][col].state)
+				case %notClicked, %flagged
+					if(@gameCleared)
+						do draw@rect(col$ float * @size, row$ float * @size, @size, @size, 16#FF0000FF)
+					else
+						do draw@rect(col$ float * @size, row$ float * @size, @size - 1.0, @size - 1.0, 16#FFFFFF00 + (s = %notClicked ?(255, 0)))
+					end if
+				case %clicked
+					if(@squares[row][col].mine = 1)
+						do draw@rect(col$ float * @size, row$ float * @size, @size - 1.0, @size - 1.0, 16#FFFF0000)
+					else
+						if(@squares[row][col].number <> 0)
+							do @font.draw((col$ float + 0.25) * @size, row$ float * @size, "\{@squares[row][col].number}", 16#FFD0D0D0)
+						end if
+					end if
+				end switch
+			end for
+		end for
+	end func
+end func
+
+func open(row: int, col: int)
+	if(!@inArea(row, col))
+		ret
+	end if
+	if(@squares[row][col].state = %notClicked)
+		do @squares[row][col].state :: %clicked
+		if(@squares[row][col].mine = 1)
+			do @gameovered :: true
+			;do Dbg@Log("=== GAMEOVER ===")
+			ret
+		end if
+
+		do @numOpen :+ 1
+		;do Dbg@Log("numOpen = " ~ @numOpen.ToStr())
+		if(@numOpen = @numNotMines)
+			do @gameCleared :: true
+			;do Dbg@Log("☆ GAMECLEAR ☆")
+		end if
+
+		if(@squares[row][col].number = 0)
+			do @openAround(row, col)
+		end if
+	end if
+end func
+
+func flagged(row: int, col: int): int
+	ret @squares[row][col].state = %flagged ?(1, 0)
+end func
+
+func openAround(row: int, col: int)
+	do @open(row - 1, col - 1)
+	do @open(row - 1, col)
+	do @open(row - 1, col + 1)
+	do @open(row, col - 1)
+	do @open(row, col + 1)
+	do @open(row + 1, col - 1)
+	do @open(row + 1, col)
+	do @open(row + 1, col + 1)
+end func
+
+func inArea(row: int, col: int): bool
+	ret (1 <= row & row <= @height & 1 <= col & col <= @width)
+end func
+
+func clickLR(row: int, col: int)
+	if(@inArea(row, col) & 
+		| @squares[row][col].state = %clicked &
+		| (
+		| @flagged(row - 1, col - 1) +
+		| @flagged(row - 1, col    ) +
+		| @flagged(row - 1, col + 1) +
+		| @flagged(row    , col - 1) +
+		| @flagged(row    , col + 1) +
+		| @flagged(row + 1, col - 1) +
+		| @flagged(row + 1, col    ) +
+		| @flagged(row + 1, col + 1)
+		| = @squares[row][col].number
+		| )
+		|)
+		do @openAround(row, col)
+	end if
+end func

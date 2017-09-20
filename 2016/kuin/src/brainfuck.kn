@@ -1,0 +1,78 @@
+func main()
+	{
+		※Brainf*ckのコードは下記のURLに掲載されているものを使用しています。
+		Helloworldless Hello world by Mark Byers: 
+			http://golf.shinh.org/reveal.rb?Helloworldless+Hello+world/Mark+Byers_1239553451&bf
+	}
+	do @brainfuck("++++++++[->->+++++>>>+>+>+>++>>++[+++<+]<]>->.-[->-[>]<<[<+]->-]>+>--.->---..>+++>.>>>++++[.<]")
+end func
+
+func brainfuck(src: []char)
+	var data: []bit8 :: #[30000]bit8
+	var ptr: int :: 0
+	var i: int :: 0
+	var reader: @Reader :: #@Reader
+	while(i < ^src)
+		switch(src[i])
+		case '>'
+			do ptr :+ 1
+		case '<'
+			do ptr :- 1
+		case '+'
+			do data[ptr] :+ 1b8
+		case '-'
+			do data[ptr] :- 1b8
+		case '.'
+			do cui@print([data[ptr] $ char])
+		case ','
+			do data[ptr] :: reader.getChar() $ bit8
+		case '['
+			if(data[ptr] = 0b8)
+				var cnt: int :: 1
+				while(cnt > 0)
+					do i :+ 1
+					switch(src[i])
+					case '['
+						do cnt :+ 1
+					case ']'
+						do cnt :- 1
+					end switch
+				end while
+			end if
+		case ']'
+			if(data[ptr] <> 0b8)
+				var cnt: int :: 1
+				while(cnt > 0)
+					do i :- 1
+					switch(src[i])
+					case '['
+						do cnt :- 1
+					case ']'
+						do cnt :+ 1
+					end switch
+				end while
+			end if
+		end switch
+		do i :+ 1
+	end while
+	do cui@print("\n")
+end func
+
+class Reader()
+	var buff: []char
+	var p: int
+
+	*func ctor()
+		do me.buff :: ""
+		do me.p :: 0
+	end func
+
+	+func getChar(): char
+		do me.p :+ 1
+		if(me.p >= ^me.buff)
+			do me.p :: 0
+			do me.buff :: cui@input() ~ "\n"
+		end if
+		ret me.buff[me.p]
+	end func
+end class

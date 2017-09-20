@@ -1,0 +1,161 @@
+func main()
+	var depth: int :: 8
+	var size: int :: (1b64).shl(depth) $ int
+	do @drawDragon(size, depth * 2)
+end func
+
+const ww: int :: 512
+var wh: int
+var h: int
+
+func drawDragon(leng: int, depth: int)
+	var d: int :: leng / 3 + 1
+	do @h :: leng + 3
+	do @w :: leng + d * 3 / 2 + 2
+	do @wh :: @ww * @h / @w
+	do @buf :: #[@h * @w]@Rgb
+	for i(0, ^@buf - 1)
+		do @buf[i] :: #@Rgb
+	end for
+
+	do @x :: d
+	do @y :: d
+	do @dx :: leng
+	do @dy :: 0
+	do @scale :: 1
+	do @clen :: 0
+
+	for(1, depth)
+		do @dy :: @dx + @dy
+		do @dx :: 2 * @dx - @dy
+		do @scale :* 2
+		do @x :* 2
+		do @y :* 2
+	end for
+	do @iter_string("FX", depth)
+
+	var maxv: float :: 0.0
+	for i(0, ^@buf - 1)
+		var b: @Rgb :: @buf[i]
+		for j(0, ^[b.r, b.g, b.b] - 1)
+			var c: float :: [b.r, b.g, b.b][j]
+			if(c > maxv)
+				do maxv :: c
+			end if
+		end for
+	end for
+	var rate: float :: 255.0 / maxv
+	for i(0, ^@buf - 1)
+		do @buf[i].r :* rate
+		do @buf[i].g :* rate
+		do @buf[i].b :* rate
+	end for
+
+	if(true)
+		{ 画面に出力する場合はこちら。 }
+		var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, @ww, @wh, "Dragon curve")
+		var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @ww, @wh, %fix, %fix, false)
+		do drawMain.onPaint :: onPaint
+		func onPaint(wnd: wnd@WndBase, width: int, height: int)
+			var pixSize: float :: @ww $ float / @w $ float
+			for i(0, @h * @w - 1)
+				do draw@rect(pixSize * (i % @w) $ float, pixSize * (i / @w) $ float, pixSize, pixSize,
+				| @buf[i].r $bit8 $int * 16#10000
+				| +@buf[i].g $bit8 $int * 16#100
+				| +@buf[i].b $bit8 $int
+				| +16#FF000000)
+			end for
+			do draw@render(0)
+		end func
+
+		while(wnd@act())
+		end while
+	else
+		{ ファイルに出力する場合はこちら。PNM形式(P6)で保存します。 }
+		var fs: file@Writer :: file@makeWriter("dragon_curve.pnm", false)
+		do fs.writeStr("P6\n\{@w} \{@h}\n255\n")
+		var fpix: []bit8 :: #[@h * @w * 3]bit8
+		for i(0, @h * @w - 1)
+			do fpix[3 * i    ] :: @buf[i].r $ bit8
+			do fpix[3 * i + 1] :: @buf[i].g $ bit8
+			do fpix[3 * i + 2] :: @buf[i].b $ bit8
+		end for
+		do fs.write(fpix)
+	end if
+end func
+
+var x: int
+var y: int
+var w: int
+var dx: int
+var dy: int
+var scale: int
+var clen: int
+
+class Rgb()
+	+var r: float
+	+var g: float
+	+var b: float
+end class
+
+var buf: []@Rgb
+ 
+func h_rgb(x: int, y: int)
+	var VAL: float :: 1.0 - (lib@cos(lib@pi * 64.0 * @clen $ float / @scale $ float) - 1.0) / 4.0
+	const SAT: float :: 1.0
+	var h: float :: 6.0 * @clen $ float / @scale $ float
+	var c: float :: VAL * SAT
+	var X: float :: -c * (h % 2.0).abs()
+ 
+	var p: @Rgb :: @buf[y * @w + x]
+	switch(h $ int % 6)
+	case 0
+		do p.r :+ c
+		do p.g :+ X
+	case 1
+		do p.r :+ X
+		do p.g :+ c
+	case 2
+		do p.g :+ c
+		do p.b :+ X
+	case 3
+		do p.g :+ X
+		do p.b :+ c
+	case 4
+		do p.b :+ c
+		do p.r :+ X
+	case 5
+		do p.b :+ X
+		do p.r :+ c
+	default
+	end switch
+end func
+ 
+func iter_string(str: []char, d: int)
+	for i(0, ^str - 1)
+		var c: char :: str[i]
+		switch(c)
+		case 'X'
+			if(d <> 0)
+				do @iter_string("X+YF+", d - 1)
+			end if
+		case 'Y'
+			if(d <> 0)
+				do @iter_string("-FX-Y", d - 1)
+			end if
+		case '+'
+			do @dx :$ @dy
+			do @dy :: -@dy
+		case '-'
+			do @dx :$ @dy
+			do @dx :: -@dx
+		case 'F'
+			do @clen :+ 1
+			do @h_rgb(@x / @scale, @y / @scale)
+			do @x :+ @dx
+			do @y :+ @dy
+		default
+			assert false
+		end switch
+	end for
+end func

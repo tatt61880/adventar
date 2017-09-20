@@ -1,0 +1,48 @@
+{円周率の値を計算します(Spigotアルゴリズム)}
+func main()
+	const digits : int :: 31415 {何桁目まで計算するか}
+	const d : int :: 5 {何桁毎に区切るか}
+	assert d < 10 {10以上だとintの上限を超えてしまいます}
+	assert digits % d = 0
+	const ignore: int :: (d $ float * 3.3219) $ int + 1 {無視する項数}
+	const dd: int :: digits * ignore / d
+	var base: int :: 10 ^ d
+
+	var str: []char :: ""
+	var nume: []int :: #[dd + ignore]int
+	var carry: int :: 0
+
+	for n(dd, 1, -ignore)
+		do carry :% base
+		var digit: int :: carry
+		for i(n - 1, 1, -1)
+			var denom: int :: 2 * i - 1
+			do carry :: carry * i + base * (n = dd ?((base * 2), nume[i]))
+			do nume[i] :: carry % denom
+			do carry :/ denom
+		end for
+		if(n = dd)
+			do str :~ "\{(digit + carry / base) / base}."
+			do str :~ @noSpaceNum((digit + carry / base) % base, d) ~ " "
+		else
+			do str :~ @noSpaceNum(digit + carry / base, d) ~ " "
+			if((dd - n) % (ignore * 10) = (ignore * 9))
+				if((dd - n) % (ignore * 100) = (ignore * 99))
+					do str :~ "[\{d * (dd - n) / ignore + d}]"
+				end if
+				do str :~ "\n  "
+			end if
+		end if
+	end for
+	do cui@print(str)
+end func
+
+func noSpaceNum(num: int, digit: int): []char
+	var str: []char :: ""
+	for(1, digit)
+		do str :~ (num % 10).toStr()
+		do num :/ 10
+	end for
+	do str.reverse()
+	ret str
+end func

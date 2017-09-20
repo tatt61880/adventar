@@ -1,0 +1,27 @@
+{ 
+	再起的な描画でシェルピンスキーのカーペットを表示します。
+	Wacław Franciszek Sierpiński - 1919
+}
+func main()
+	const size: int :: 600
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, size, size, "Sierpinski carpet")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, size, size, %fix, %fix, false)
+	while(wnd@act())
+		do draw@rect(0.0, 0.0, size $ float, size $ float, 16#FF000000)
+		do @void(0.0, 0.0, size $ float / 3.0 $ float)
+		do draw@render(60)
+	end while
+end func
+
+func void(x : float, y : float, size : float)
+	do draw@rect(x + size, y + size, size, size, 16#FFFFFFFF)
+	if(size > 3.0)
+		for i(0, 2)
+			for j(0, 2)
+				if(i * j <> 1)
+					do @void(x + size * i $ float, y + size * j $ float, size / 3.0)
+				end if
+			end for
+		end for
+	end if
+end func

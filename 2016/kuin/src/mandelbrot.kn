@@ -1,0 +1,60 @@
+func main()
+	const realMin: float :: -2.0
+	const realMax: float :: 1.0
+	const realDel: float :: (realMax - realMin) / sizeX $ float
+	const imagMin: float :: -1.2
+	const imagMax: float :: 1.2
+	const imagDel: float :: (imagMax - imagMin) / sizeY $ float
+	const calcNum: int :: 300
+
+	const sizeX: int :: 300
+	const sizeY: int :: (sizeX $ float * (imagMax - imagMin) / (realMax - realMin)) $ int
+	const margin: int :: 5
+	const wndSizeX: int :: sizeX + 2 * margin
+	const wndSizeY: int :: sizeY + 2 * margin
+
+	var zr: float
+	var zi: float
+	var znr: float
+	var zni: float
+	var cr: float
+	var ci: float
+	var num: int
+
+	var colors: [][]float :: #[sizeY, sizeX]float
+	for row(0, sizeY - 1)
+		do ci :: imagMin + imagDel * row $ float
+		for col(0, sizeX - 1)
+			do cr :: realMin + realDel * col $ float
+			do zr :: 0.0
+			do zi :: 0.0
+			for i(1, calcNum)
+				do num :: i
+				do znr :: zr * zr - zi * zi + cr
+				if(znr > 4.0)
+					break i
+				end if
+				do zni :: 2.0 * zr * zi + ci
+				if(zni > 4.0)
+					break i
+				end if
+				do zr :: znr
+				do zi :: zni
+			end for
+			do colors[row][col] :: num $ float / calcNum $ float
+		end for
+	end for
+
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, wndSizeX, wndSizeY, "Mandelbrot set")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeX, wndSizeY, %fix, %fix, false)
+	while(wnd@act())
+		do draw@rect(0.0, 0.0, wndSizeX $ float, wndSizeY $ float, 16#FF6188FF)
+		for row(0, sizeY - 1)
+			for col(0, sizeX - 1)
+				var c: int :: (colors[sizeY - 1 - row][col] * 255.0) $ int
+				do draw@rect((col + margin) $ float, (row + margin) $ float, 1.0, 1.0, 16#FF000000 + c * 16#10101)
+			end for
+		end for
+		do draw@render(30)
+	end while
+end func

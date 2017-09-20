@@ -1,0 +1,120 @@
+{ lifegame.kn }
+
+const wndSizeW: int :: 800
+const wndSizeH: int :: 600
+const windowWidth: float :: @wndSizeW $ float
+const windowHeight: float :: @wndSizeH $ float
+const stageWidth: float :: @windowWidth
+const stageHeight: float :: @windowHeight
+const blockSize: float :: 20.0
+const blockNumX: int :: (@stageWidth / @blockSize) $ int
+const blockNumY: int :: (@stageHeight / @blockSize) $ int
+const defaultFramePerDrawing: int :: 5
+var clickFlagL: bool
+var lastX: int
+var lastY: int
+var board: [][]int
+
+func drawLifegame()
+	{block}
+	for i(1, @blockNumY)
+		for j(1, @blockNumX)
+			var x1: float :: (@stageWidth / @blockNumX $ float) * (j - 1) $ float + 1.0
+			var y1: float :: (@stageHeight / @blockNumY $ float) * (i - 1) $ float + 1.0
+			var x2: float :: (@stageWidth / @blockNumX $ float) * j $ float - 1.0
+			var y2: float :: (@stageHeight / @blockNumY $ float) * i $ float - 1.0
+			var color: int :: (1 - @board[i][j]) * 255
+			do draw@rect(x1, y1, @blockSize - 0.5, @blockSize - 0.5, 16#FF000000 + color * 16#10101)
+		end for
+	end for
+end func
+
+func main()
+	do @board:: #[@blockNumY + 2, @blockNumX + 2]int
+	var framePerDrawing: int :: @defaultFramePerDrawing
+	var stopflag: bool :: true
+
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, @wndSizeW, @wndSizeH, "Life Game")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @wndSizeW, @wndSizeH, %fix, %fix, false)
+	do drawMain.onMouseMove :: onMouseMove
+	do drawMain.onMouseDownL :: onMouseDownL
+	do drawMain.onMouseUpL :: onMouseUpL
+
+	{
+	; ランダムに配置
+	for(1, @blockNumX * @blockNumY / 2)
+		var x: int :: lib@rnd(1, @blockNumX)
+		var y: int :: lib@rnd(1, @blockNumY)
+		do @board[y][x] :: 1
+	end for
+	}
+
+	func onMouseMove(wnd: wnd@WndBase, x: int, y: int)
+		if(@clickFlagL)
+			do @L(x, y)
+		end if
+	end func
+	func onMouseDownL(wnd: wnd@WndBase, x: int, y: int)
+		do @clickFlagL :: true
+		do @L(x, y)
+	end func
+	func onMouseUpL(wnd: wnd@WndBase, x: int, y: int)
+		do @clickFlagL :: false
+		do @lastX :: 0
+		do @lastY :: 0
+	end func
+
+	var before_board: [][]int :: #[@blockNumY + 2, @blockNumX + 2]int
+	var cnt: int :: 0
+	while a(wnd@act())
+		do cnt :+ 1
+		do draw@render(30)
+		do @drawLifegame()
+
+		if(input@pad(0, %a) = 1) {Start/Stop}
+				do stopflag :: !stopflag
+		elif(input@pad(0, %right) = 1)
+			if(framePerDrawing > 5)
+				do framePerDrawing :- 5
+				;do cui@print("framePerDrawing = \{framePerDrawing}\n")
+			end if
+		elif(input@pad(0, %left) = 1)
+			if(framePerDrawing < 120)
+				do framePerDrawing :+ 5
+				;do cui@print("framePerDrawing = \{framePerDrawing}\n")
+			end if
+		end if
+
+		if(stopflag)
+			skip a
+		end if
+
+		if(!@clickFlagL & cnt % framePerDrawing = 0)
+			var tmp: [][]int :: @board
+			do @board :: before_board
+			do before_board :: tmp
+			for i(1, @blockNumY)
+				for j(1, @blockNumX)
+					var living_num: int :: before_board[i-1][j-1] + before_board[i-1][j] + before_board[i-1][j+1] + before_board[i][j-1] + before_board[i][j+1] + before_board[i+1][j-1] + before_board[i+1][j] + before_board[i+1][j+1]
+					if(living_num = 3 | (before_board[i][j] = 1 & living_num = 2))
+						do @board[i][j] :: 1
+					else
+						do @board[i][j] :: 0
+					end if
+				end for
+			end for
+		end if
+	end while
+end func
+
+func L(x: int, y: int)
+	var cellX: int :: (x * @blockNumX / @stageWidth $ int) + 1
+	var cellY: int :: (y * @blockNumY / @stageHeight $ int) + 1
+	if(@lastX <> cellX | @lastY <> cellY)
+		if(0 < cellX & 0 < cellY & cellX <= @blockNumX & cellY <= @blockNumY)
+			do @board[cellY][cellX] :: 1 - @board[cellY][cellX]
+		end if
+		do @lastX :: cellX
+		do @lastY :: cellY
+	end if
+end func

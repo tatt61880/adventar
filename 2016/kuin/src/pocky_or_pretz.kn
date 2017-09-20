@@ -1,0 +1,10 @@
+func main()
+	switch(lib@rnd(0, 917))
+	case 0 to 314
+		do cui@print("Pocky!\n")
+	case 315
+		do cui@print("Pretz!\n")
+	default
+		do cui@print("Toppo!\n")
+	end switch
+end func

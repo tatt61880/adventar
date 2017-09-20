@@ -1,0 +1,13 @@
+enum E {/*{*/e};
+#include <stdio.h>
+int main(void){
+	puts("Hello, C.");
+	/*}}
+end enum
+{ KuinとC言語のPolyglotです。C言語のコードとしてもコンパイルできます。}
+func main()
+	do cui@print("Hello, Kuin!!\n")
+end func
+{*/
+	return 0;
+}

@@ -1,0 +1,17 @@
+{ 回文かどうか判定するプログラムです。 }
+func main()
+	var strs: [][]char :: ["Palindrome", "level", "12/21", "しんぶんし", "たけやぶやけた", "回文", "ごまたまご"]
+	for i(0, ^strs - 1)
+		var str: []char :: strs[i]
+		do cui@print("「\{str}」は、回文\{@isParindrome(str) ?("です。", "ではありません。")}\n")
+	end for
+end func
+
+func isParindrome(str: []char): bool
+	for i(0, (^str / 2 - 1))
+		if(str[i] <> str[^str - 1 - i])
+			ret false
+		end if
+	end for
+	ret true
+end func

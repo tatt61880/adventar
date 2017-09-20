@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ adventar/adventar.php [L]
+</IfModule>
+
+AddType "text/plain; charset=UTF-8" .kn
+AddType "text/javascript; charset=UTF-8" .js
+AddType "text/plain; charset=UTF-8" .txt
+
+ErrorDocument 403 /403.html
+ErrorDocument 404 /404.php
+
+AddType image/xicon .ico
+<Files favicon.ico>
+ErrorDocument 404 ./favicon.ico
+</Files>

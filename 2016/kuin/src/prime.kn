@@ -1,0 +1,15 @@
+{ 10000以下の素数を出力します。 }
+func main()
+	var primes: []int :: [2, 3]
+	for num(5, 10000, 2)
+		for i(0, ^primes - 1)
+			if(num % primes[i] = 0)
+				skip num
+			end if
+		end for
+		do primes :~ [num]
+	end for
+	for i(0, ^primes - 1)
+		do cui@print("\{primes[i]}\n")
+	end for
+end func

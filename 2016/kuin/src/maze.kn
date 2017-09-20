@@ -1,0 +1,191 @@
+{迷路です。ゴールすると、ゴールの位置が反対側になって迷路が再構築されるため、無限に遊べます。}
+
+{ある程度小さいサイズの方がおすすめです。}
+const W: int :: 30
+const H: int :: 20
+const px: float :: 10.0
+const WW: int :: (2 * @W + 1) * @px $ int
+const WH: int :: (2 * @H + 1) * @px $ int
+
+func main()
+	do @map :: #[2 * @H + 1, 2 * @W + 1]bool
+	do @userX :: 1
+	do @userY :: 1
+	do @createMaze()
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, @WW, @WH, "無限に遊べる迷路です")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @WW, @WH, %scale, %scale, false)
+
+	while(wnd@act())
+		do @moveUser()
+		do @drawMaze()
+		do @drawGoal()
+		do @drawUser()
+		do draw@render(60)
+		if(@userX = @goalX & @userY = @goalY)
+			do @createMaze()
+		end if
+	end while
+end func
+
+var map: [][]bool
+var aisle: [][]bit8
+var x: int
+var y: int
+var userX: int
+var userY: int
+var goalX: int
+var goalY: int
+
+const U: bit8 :: 1b8
+const R: bit8 :: 2b8
+const D: bit8 :: 4b8
+const L: bit8 :: 8b8
+
+func carve()
+	do @aisle :: #[@H, @W]bit8
+	do @x :: lib@rnd(0, @W - 1)
+	do @y :: lib@rnd(0, @H - 1)
+	while(true)
+		switch(selectDir())
+		case 0b8
+			ret
+		case @U
+			do @aisle[@y][@x] :: @aisle[@y][@x].or(@U)
+			do @y :- 1
+			do @aisle[@y][@x] :: @D.or(@D.shl(4))
+		case @R
+			do @aisle[@y][@x] :: @aisle[@y][@x].or(@R)
+			do @x :+ 1
+			do @aisle[@y][@x] :: @L.or(@L.shl(4))
+		case @D
+			do @aisle[@y][@x] :: @aisle[@y][@x].or(@D)
+			do @y :+ 1
+			do @aisle[@y][@x] :: @U.or(@U.shl(4))
+		case @L
+			do @aisle[@y][@x] :: @aisle[@y][@x].or(@L)
+			do @x :- 1
+			do @aisle[@y][@x] :: @R.or(@R.shl(4))
+		end switch
+	end while
+
+	func selectDir(): bit8
+		while(true)
+			var ds: []bit8 :: [@U, @R, @D, @L]
+			do ds.shuffle()
+			for i(0, ^ds - 1)
+				var d: bit8 :: ds[i]
+				if(checkDir(d))
+					ret d {まだ掘られていない道があったのでそちらに向かいます}
+				end if
+			end for
+			{掘った場所を戻っていきます}
+			switch d(@aisle[@y][@x].shr(4))
+			case 0b8
+				ret d {スタート地点まで戻ってきたので穴掘りを終了します}
+			case @U
+				do @y :- 1
+			case @R
+				do @x :+ 1
+			case @D
+				do @y :+ 1
+			case @L
+				do @x :- 1
+			end switch
+		end while
+
+		func checkDir(d: bit8): bool
+			switch(d)
+			case @U
+				ret (@y > 0      & @aisle[@y - 1][@x] = 0b8)
+			case @R
+				ret (@x + 1 < @W & @aisle[@y][@x + 1] = 0b8)
+			case @D
+				ret (@y + 1 < @H & @aisle[@y + 1][@x] = 0b8)
+			case @L
+				ret (@x > 0      & @aisle[@y][@x - 1] = 0b8)
+			default
+				ret false
+			end switch
+		end func
+	end func
+end func
+
+func createMaze()
+	do @goalX :: 2 * @W - @userX
+	do @goalY :: 2 * @H - @userY
+	do @carve()
+	for h(0, 2 * @H)
+		for w(0, 2 * @W)
+			do @map[h][w] :: true
+		end for
+	end for
+
+	for h(0, @H - 1)
+		for w(0, @W - 1)
+			do @map[2 * h + 1][2 * w + 1] :: false
+			if(@aisle[h][w].and(@U) <> 0b8)
+				do @map[2 * h + 0][2 * w + 1] :: false
+			end if
+			if(@aisle[h][w].and(@R) <> 0b8)
+				do @map[2 * h + 1][2 * w + 2] :: false
+			end if
+			if(@aisle[h][w].and(@D) <> 0b8)
+				do @map[2 * h + 2][2 * w + 1] :: false
+			end if
+			if(@aisle[h][w].and(@L) <> 0b8)
+				do @map[2 * h + 1][2 * w + 0] :: false
+			end if
+		end for
+	end for
+end func
+
+func drawMaze()
+	for h(0, 2 * @H)
+		for w(0, 2 * @W)
+			if(@map[h][w])
+				do draw@rect(w $ float * @px, h $ float * @px, @px, @px, 16#FF00DDBB)
+			end if
+		end for
+	end for
+end func
+
+func drawUser()
+	do draw@circle((@userX $ float + 0.5) * @px, (@userY $ float + 0.5) * @px, @px * 0.5, @px * 0.5, 16#FFFFDD00)
+end func
+func drawGoal()
+	do draw@rect((@goalX $ float - 0.2) * @px, (@goalY $ float - 0.2) * @px, @px * 1.4, @px * 1.4, 16#FFFF0000)
+end func
+
+{アローキー(←↓↑→)で操作します。}
+func moveUser(): bool
+	if(myPadPress(%up))
+		if(!@map[@userY - 1][@userX])
+			do @userY :- 2
+			ret true
+		end if
+	end if
+	if(myPadPress(%right))
+		if(!@map[@userY][@userX + 1])
+			do @userX :+ 2
+			ret true
+		end if
+	end if
+	if(myPadPress(%down))
+		if(!@map[@userY + 1][@userX])
+			do @userY :+ 2
+			ret true
+		end if
+	end if
+	if(myPadPress(%left))
+		if(!@map[@userY][@userX - 1])
+			do @userX :- 2
+			ret true
+		end if
+	end if
+	ret false
+
+	func myPadPress(btn: input@PadBtn): bool
+		var n: int :: input@pad(0, btn)
+		ret n = 1 | n >= 10 & n % 4 = 0
+	end func
+end func

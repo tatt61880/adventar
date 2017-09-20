@@ -1,0 +1,55 @@
+{
+ランダムウォークのプログラムです。
+古い足跡は徐々に暗くなって消えていきます(完全に消えるまでの歩数をmaxで設定できます)
+}
+func main()
+	const max: int :: 500
+	const W: int :: 50 {あえて狭くしていますが広くしても問題ありません。}
+	const H: int :: 50 {同上。正方形にする必要もありません。}
+	const px: float :: 5.0
+	const wndSizeW: int :: px $ int * W
+	const wndSizeH: int :: px $ int * H
+
+	class Pos()
+		+var x: int
+		+var y: int
+		+func init(x: int, y: int): Pos
+			do me.x :: x
+			do me.y :: y
+			ret me
+		end func
+	end class
+	var posQueue: queue<Pos> :: #queue<Pos>
+
+	var x: int :: W / 2
+	var y: int :: H / 2
+	var cnt: int :: 0
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, wndSizeW, wndSizeH, "Random walk")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeW, wndSizeH, %fix, %fix, false)
+	while(wnd@act())
+		do cnt :+ 1
+		do draw@rect(0.0, 0.0, px * W $ float, px * H $ float, 16#FF6060C0)
+		switch(lib@rnd(0, 3))
+		case 0
+			do x :: (x + 1) % W
+		case 1
+			do x :: (x + W - 1) % W
+		case 2
+			do y :: (y + 1) % H
+		case 3
+			do y :: (y + H - 1) % H
+		end switch
+		var c: int :: cnt
+		do posQueue.add((#Pos).init(x, y))
+		if(^posQueue > max)
+			do posQueue.get()
+		end if
+		for i(1, ^posQueue)
+			var v: int :: (max - ^posQueue + i) * 255 / max
+			var p: Pos :: posQueue.get()
+			do draw@rect(p.x $ float * px, p.y $ float * px, px, px, 16#FF000000 + v * 16#10100)
+			do posQueue.add(p)
+		end for
+		do draw@render(60)
+	end while
+end func

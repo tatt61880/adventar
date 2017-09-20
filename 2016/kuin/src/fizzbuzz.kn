@@ -1,0 +1,20 @@
+{
+	{ FizzBuzzを出力するKuinのコードです。 }
+	3の倍数なら"Fizz"
+	5の倍数なら"Buzz"
+	15の倍数なら"FizzBuzz"
+	を表示します。
+}
+func main()
+	for i(1, 100)
+		if(i % 15 = 0)
+			do cui@print("FizzBuzz\n")
+		elif(i % 5 = 0)
+			do cui@print("Buzz\n")
+		elif(i % 3 = 0)
+			do cui@print("Fizz\n")
+		else
+			do cui@print("\{i}\n")
+		end if
+	end for
+end func

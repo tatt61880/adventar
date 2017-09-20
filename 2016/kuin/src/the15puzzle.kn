@@ -1,0 +1,192 @@
+{ 15パズル }
+func main()
+	assert @pieceSize % @piecePerFrame = 0 {この条件が満たされている前提で駒の移動処理を行います}
+	var finishedFont: draw@Font :: draw@makeFont("Meiryo", @finishedFontSize, false, false, true, 0.0)
+
+	{駒の初期化}
+	do @pieces :: #[16]@Piece
+	for i(0, 15)
+		do @pieces[i] :: (#@Piece).init(i)
+	end for
+	do @voidPiece :: @pieces[15]
+	do @shufflePieces()
+
+	const wndSizeW: int :: @pieceSize * 4
+	const wndSizeH: int :: @pieceSize * 4 + @finishedFontSize * 2
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, wndSizeW, wndSizeH, "The 15 puzzle")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeW, wndSizeH, %fix, %fix, false)
+	while a(wnd@act())
+		do draw@render(30)
+		do drawPieces()
+		if(@completeCheck())
+			do finishedFont.draw(10.0, @pieceSize $ float * 4.0, "Congratulations!", 16#FFFFFFFF)
+		end if
+		for i(0, ^@pieces - 1) {移動アニメーション用のループです}
+			var p: @Piece :: @pieces[i]
+			if(p.dir <> %stay)
+				do p.move(@piecePerFrame)
+				skip a {移動中にマウス入力を受け付けないように、ここでwhileループの先頭に戻ります}
+			end if
+		end for
+
+		do @setDirection(false)
+		if(input@pad(0, %a) > 10) {スペースキー長押しでシャッフル}
+			do @shufflePieces()
+		end if
+	end while
+
+	func drawPieces()
+		for i(0, ^@pieces - 1)
+			var p: @Piece :: @pieces[i]
+			if(p <>& @voidPiece)
+				do p.draw()
+			end if
+		end for
+	end func
+end func
+
+const pieceSize: int :: 100
+const shuffleNum: int :: 1000
+const piecePerFrame: int :: @pieceSize / 4
+const fontSize: int :: 50
+const finishedFontSize: int :: 20
+
+enum Dir
+	stay
+	left :: 1
+	right :: 2
+	up :: 3
+	down :: 4
+end enum
+
+class Piece()
+	var id: int
+	var num: int
+	var font: draw@Font
+	+var posId: int
+	+var pos: Pos
+	+var dir: @Dir
+
+	+func init(id: int): @Piece
+		do me.id :: id
+		do me.num :: id + 1
+		do me.font :: draw@makeFont("Meiryo", @fontSize, false, false, true, 0.0)
+		do me.posId :: id
+		do me.pos :: (#Pos).init(me.posId)
+		do me.dir :: %stay
+		ret me
+	end func
+
+	+func getId(): int
+		ret me.id
+	end func
+
+	+func move(pixelPerFrame: int)
+		if(me.dir = %left)
+			do me.pos.x :- pixelPerFrame
+		elif(me.dir = %right)
+			do me.pos.x :+ pixelPerFrame
+		elif(me.dir = %up)
+			do me.pos.y :- pixelPerFrame
+		elif(me.dir = %down)
+			do me.pos.y :+ pixelPerFrame
+		end if
+		if(me.pos.x % @pieceSize = 0 & me.pos.y % @pieceSize = 0)
+			do me.dir :: %stay
+		end if
+	end func
+
+	+func draw()
+		do draw@rect(me.pos.x $ float + 2.0, me.pos.y $ float + 2.0, @pieceSize $ float - 4.0, @pieceSize $ float - 4.0, 16#FF0000FF)
+		do me.font.draw(me.pos.x $ float + (@pieceSize $ float - (^me.num.toStr() * @fontSize) $ float) / 2.0, me.pos.y $ float, me.num.toStr(), 16#FFFFFFFF)
+	end func
+
+	class Pos()
+		+var x: int
+		+var y: int
+		+func init(posId: int): Pos
+			do me.x :: @pieceSize * (posId % 4)
+			do me.y :: @pieceSize * (posId / 4)
+			ret me
+		end func
+	end class
+end class
+
+var pieces: []@Piece
+var voidPiece: @Piece
+
+{駒の位置情報を元にその駒のidを返します}
+func findPieceId(posId: int): int
+	for i(0, ^@pieces - 1)
+		var p: @Piece :: @pieces[i]
+		if(p.posId = posId)
+			ret p.getId()
+		end if
+	end for
+	assert false {駒が見つかりません。これはおかしいです。}
+end func
+
+func setDirection(shuffleMode: bool)
+	var id: int
+	var dir: @Dir :: %stay
+	if(shuffleMode)
+		do dir :: lib@rnd(1, 4) $ @Dir
+	else
+		if(input@pad(0, %left) % 15 = 1)
+			do dir :: %left
+		elif(input@pad(0, %right) % 15 = 1)
+			do dir :: %right
+		elif(input@pad(0, %up) % 15 = 1)
+			do dir :: %up
+		elif(input@pad(0, %down) % 15 = 1)
+			do dir :: %down
+		end if
+	end if
+
+	switch d(dir)
+	case %left
+		if(@voidPiece.posId % 4 <> 3)
+			do id :: @findPieceId(@voidPiece.posId + 1)
+			do @pieces[id].dir :: d
+			do @voidPiece.posId :$ @pieces[id].posId
+		end if
+	case %right
+		if(@voidPiece.posId % 4 <> 0)
+			do id :: @findPieceId(@voidPiece.posId - 1)
+			do @pieces[id].dir :: d
+			do @voidPiece.posId :$ @pieces[id].posId
+		end if
+	case %up
+		if(@voidPiece.posId / 4 <> 3)
+			do id :: @findPieceId(@voidPiece.posId + 4)
+			do @pieces[id].dir :: d
+			do @voidPiece.posId :$ @pieces[id].posId
+		end if
+	case %down
+		if(@voidPiece.posId / 4 <> 0)
+			do id :: @findPieceId(@voidPiece.posId - 4)
+			do @pieces[id].dir :: d
+			do @voidPiece.posId :$ @pieces[id].posId
+		end if
+	end switch
+
+	if(shuffleMode)
+		do @pieces[id].move(@pieceSize)
+	end if
+end func
+
+func shufflePieces()
+	for i(1, @shuffleNum)
+		do @setDirection(true)
+	end for
+end func
+
+func completeCheck(): bool
+	for i(0, ^@pieces - 1)
+		var p: @Piece :: @pieces[i]
+		if(p.getId() <> p.posId)
+			ret false
+		end if
+	end for
+	ret true
+end func

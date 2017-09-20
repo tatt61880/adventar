@@ -1,0 +1,143 @@
+【<a href="http://www.adventar.org/calendars/1663">素数大富豪 Advent Calendar 2016</a>】14日目は、<a href="https://twitter.com/miura_prime">みうらさん(@miura_prime)</a>（<a href="http://live.nicovideo.jp/watch/lv271784850#17:37:13">素数大富豪大会</a>の優勝者！)の『<a href="http://togetter.com/li/1059188">ラマヌジャン革命について／素数大富豪日記11月編</a>』でした。
+14日目の記事をまだご覧になっていない方は是非！ <b>「タクシー数として有名な1729に、こんな性質もあったとは…！」</b>と驚くことでしょう。人類が10進数を採用していたからこそ、そして、トランプが「1～10」ではなく「1～13」で構成されているからこそ という運命を感じる性質が紹介されていました。必見です。
+<hr>
+<h1>はじめに</h1>
+<img src="../images/tatt61880.png" width="128" alt="[Images: @tatt61880のアイコン]" />
+<br>
+初めましての方は初めまして。Tatt(たっと)と申します (twitter:<a href="https://twitter.com/tatt61880">@tatt61880</a>)。<br>
+この記事を読んでいる皆様は、<a href="https://twitter.com/motcho_tw">もっちょさん(@motcho_tw)</a>の記事『<a href="http://motcho.hateblo.jp/entry/2016/12/02/193458">なんか効率のいい素数の覚え方ないかな？</a>』などを読んで、素数の暗記に励んでいらっしゃることだろうと思います。<br>
+
+この記事では、そんな皆様に<b>もっと強くなっていただく</b>ためのツールをご紹介します。<br>
+その名も、<b>「素数大富豪用 素数判定ドリル」</b>です。
+<h1>「素数大富豪用 素数判定ドリル」</h1>
+<!--
+<p>※Firefoxで動作確認を行いました。動作しないブラウザがあるかもしれません。</p>
+-->
+<script src="../src/isPrimeDrill.js"></script>
+<span id="TargetNum">初期化中… (※このメッセージが5秒以上表示されている場合は、JavaScriptが機能していない可能性があります。また、IE8以下には対応していません。) <br></span>
+<input type="button" class="large_button" style="background-color:#DEF; height:48px; border-radius:24px; padding:0px 10px 0px 10px; margin:5px 5px 5px 5px; font-size:130%;" value="素数である" id="Button_YES" onclick="onButtonClick_Judge(event, true)">
+<input type="button" class="large_button" style="background-color:#DEF; height:48px; border-radius:24px; padding:0px 10px 0px 10px; margin:5px 5px 5px 5px; font-size:130%;" value="素数ではない" id="Button_NO" onclick="onButtonClick_Judge(event, false)">
+
+<textarea id="Textarea_Results" rows="5" style="width:98%; margin:5px 1% 5px 1%; border:1px solid; border-color:#B0D4E5"></textarea><br>
+<span id="Span_Results"><br></span>
+
+<h2>「素数大富豪用 素数判定ドリル」の仕様</h2>
+<ul>
+	<li>
+		Webブラウザで遊べる素数大富豪練習用のツールです。
+	</li>
+	<li>
+		3枚のカードを並べてできた1つの数が表示されています。<br>
+		その数について、素数かどうかを考えて「素数である」「素数ではない」のいずれかを選択してください。<br>
+		正しい方を選んだら「○」が、間違った方を選んだら「×」が表示されます。
+	</li>
+	<li>
+		クリックするたびに、対象となる数が更新されます。<br>
+		終わりはありません。気が済むまで判定してください(^^)
+	</li>
+	<li>
+		3枚目のカードは1,3,7,9,11,13のどれかに限定しました。<br>
+		(例えば、「113」が出題されることはありますが、「115」が出題されることはありません。)
+	</li>
+	<li>
+		ローカル環境でも動作します。このページをダウンロードして使ってください。
+	</li>
+</ul>
+<p>
+※Internet Explorer 8以前など、古いブラウザでは動作しない可能性があります。モダンなブラウザを使用してください。
+</p>
+
+<h2>なぜ「素数大富豪用 素数判定ドリル」を作ったか</h2>
+<p>
+例えば、<a href="http://live.nicovideo.jp/watch/lv271784850#18:12:00">素数大富豪大会の決勝戦の勝敗が決まった瞬間(生放送タイムシフト18:12:00頃～)</a>に出された数は「10」「2」「1」の3枚を組み合わせた「1021」でした。
+これをうっかり「2101」として出していたら、試合結果も変わっていたかもしれません(2101=11x191で素数ではありません)。<br>
+
+また、決勝戦では、他にも<a href="http://live.nicovideo.jp/watch/lv271784850#18:02:30">「13121」や「41113」 (生放送タイムシフト18:02:30頃～)</a>、<a href="http://live.nicovideo.jp/watch/lv271784850#18:11:00">「41011」や「41213」 (生放送タイムシフト18:11:00頃～)</a>といったハイレベルな3枚出しが繰り広げられていました。<br>
+『素数かどうかを覚えておく力(記憶力, 暗記力)』および『素数かどうか確認する力(計算力)』が、素数大富豪における基礎力として重要であることに異論はないと思います。<br>
+このような力を高めるには、計算ドリルのように繰り返し練習することが効果的だと考え、「素数大富豪用 素数判定ドリル」を作成しました。<br>
+<br>
+ちなみに、今回の公開時点で枚数を3枚に限定していますが、【<a href="http://www.adventar.org/calendars/1663">素数大富豪 Advent Calendar 2016</a>】5日目のにせいさんの記事『<a href="http://nisei.hatenablog.com/entry/2016/12/05/160351">素数大富豪トーナメント鑑賞会（データ分析編）</a>』によると、決勝戦では3枚出しの頻度が一番高かったそうです。<br>
+3枚出しすべてにおいて、<a href="http://live.nicovideo.jp/watch/lv271784850#17:43:10">判定員が「～は、素数です」と言った時に<b>「もちろん」</b>と言えるレベル (生放送タイムシフト17:43:10頃～)</a>になるまで、練習に練習を重ねましょう！
+
+<!--
+<a href="https://www.google.co.jp/search?q=%E7%B4%A0%E6%95%B0%E3%83%89%E3%83%AA%E3%83%AB&ie=utf-8&oe=utf-8&client=firefox-b&gfe_rd=cr&ei=VnFDWKiIDq3U8AfG2rLIBQ#q=%22%E7%B4%A0%E6%95%B0%E3%83%89%E3%83%AA%E3%83%AB%22">「"素数ドリル" に一致する結果は見つかりませんでした。」</a>　ということで作成しました。
+素数大富豪に限らずお役立てください。
+-->
+</p>
+
+<h2>今後の展望</h2>
+この「素数大富豪用 素数判定ドリル」自体を改善して使いやすくしたり、別のプログラムを作ったり、ちょっと考えるだけでいろいろアイデアが出てきます。
+少し挙げてみるとこんな感じです。
+<ul>
+	<li>
+		カードの枚数の拡張。
+	</li>
+	<li>
+		タイムアタックの導入。
+	</li>
+	<li>
+		間違えた問題を集中的に復習する機能。
+	</li>
+	<li>
+		「並び替えたら素数になる場合」を考慮。
+	</li>
+	<li>
+		UI(ユーザインターフェース)の改善。
+	</li>
+	<li>
+		100マス素数判定アプリ。
+	</li>
+	<!--
+	<li>
+		対戦形式の練習アプリ。
+		これはすでに「素数大富豪 - FC2」( http://searial.web.fc2.com/tools/sosu.html )がありますね。
+	</li>
+	-->
+</ul>
+夢が広がりますね！！<br>
+
+<h1>おまけ - プログラミングのススメ</h1>
+この記事を読んで、面白いアイデアが浮かんだという人もいるのではないでしょうか。<br>
+プログラミングができると、「こんなツールがあったら面白そう！」というときに便利です。<br>
+数学が好きな人はプログラミングにも相性が良いと思うので、是非♪<br>
+今回紹介した「素数大富豪用 素数判定ドリル」に使用されているJavaScriptのソースコードを見てみたい方は、<a href="../src/">isPrimeDrill.js</a> を覗いてみてください。
+<br>
+
+<!--
+<h1>おまけ2 - 【素数大富豪 Advent Calendar 2016】への登録時…</h1>
+「素数大富豪」がAdvent Calendarで盛り上がっていたので、私も参加してみようと思いました。 :-)<br>
+私が参加しようとした時点(2016/12/04 10:30)で、ほとんどの枠が埋まっていました。
+<div style="text-align:center">
+	<img src="../images/20161204.png" alt="[Images: 12/4時点のAdvent Calendarの状況]" style="box-sizing: border-box; max-width:57%; border:3px solid; border-color:#888888"/>
+</div>
+このような具合です。ご覧のように、空いていたのは、
+<ul>
+	<li>
+		「15日目」
+	</li>
+	<li>
+		「16日目」
+	</li>
+	<li>
+		「20日目」
+	</li>
+	<li>
+		「25日目」
+	</li>
+</ul>
+だけ…。<br>
+残ってるん全部合成数やん！！！<br>
+<strong style="font-size: 314.159%">
+みんな素数好きすぎでしょ！！
+</strong>
+-->
+
+<h1>See you next prime!</h1>
+<p>
+それではまたの機会に！<br>
+ご覧いただきありがとうございました。:-)
+</p>
+<hr>
+【<a href="http://www.adventar.org/calendars/1663">素数大富豪 Advent Calendar 2016</a>】16日目は<a href="https://twitter.com/akatanana">ゆぅくりっどさん(@akatanana)</a>で、「素数大富豪におけるペア（2枚組）について書いてみます」とのことです。
+空いていた「16日目」に登録してくださって良かったです！
+（ちなみに、16自体は素数ではないですが、「16の正の約数の個数(<a href="https://www.wolframalpha.com/input/?i=%CF%83_0(16)">σ_0(16) = 5</a>)」や「16の正の約数の総和(<a href="https://www.wolframalpha.com/input/?i=%CF%83_1(16)">σ_1(16) = 31</a>)」は素数です…！）では、よろしくお願いします。 :-)

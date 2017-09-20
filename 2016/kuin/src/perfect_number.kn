@@ -1,0 +1,14 @@
+{ 10000以下の完全数を出力します。 }
+func main()
+	for num(1, 10000)
+		var sum: int :: 0
+		for j(1, num - 1)
+			if(num % j = 0)
+				do sum :+ j
+			end if
+		end for
+		if(sum = num)
+			do cui@print("\{num}\n")
+		end if
+	end for
+end func
