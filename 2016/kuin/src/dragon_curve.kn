@@ -53,8 +53,8 @@ func drawDragon(leng: int, depth: int)
 
 	if(true)
 		{ 画面に出力する場合はこちら。 }
-		var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, @ww, @wh, "Dragon curve")
-		var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @ww, @wh, %fix, %fix, false)
+		var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, @ww, @wh, "Dragon curve")
+		var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @ww, @wh, %scale, %scale, false)
 		do drawMain.onPaint :: onPaint
 		func onPaint(wnd: wnd@WndBase, width: int, height: int)
 			var pixSize: float :: @ww $ float / @w $ float

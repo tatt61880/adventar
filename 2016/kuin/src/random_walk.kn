@@ -24,8 +24,8 @@ func main()
 	var x: int :: W / 2
 	var y: int :: H / 2
 	var cnt: int :: 0
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, wndSizeW, wndSizeH, "Random walk")
-	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeW, wndSizeH, %fix, %fix, false)
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, wndSizeW, wndSizeH, "Random walk")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeW, wndSizeH, %scale, %scale, false)
 	while(wnd@act())
 		do cnt :+ 1
 		do draw@rect(0.0, 0.0, px * W $ float, px * H $ float, 16#FF6060C0)

@@ -30,7 +30,7 @@ end enum
 
 func main()
 	do @font :: draw@makeFont("Meiryo", (@size / 1.8) $ int, false, false, true, 0.0)
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, @wndW, @wndH, "Mainsweeper")
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %fix, @wndW, @wndH, "Mainsweeper")
 	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @wndW, @wndH, %fix, %fix, false)
 	do drawMain.onMouseDownL :: drawMainOnMouseDownL
 	do drawMain.onMouseDownR :: drawMainOnMouseDownR

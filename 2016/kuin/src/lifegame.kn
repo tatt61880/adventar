@@ -34,7 +34,7 @@ func main()
 	var framePerDrawing: int :: @defaultFramePerDrawing
 	var stopflag: bool :: true
 
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, @wndSizeW, @wndSizeH, "Life Game")
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %fix, @wndSizeW, @wndSizeH, "Life Game")
 	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @wndSizeW, @wndSizeH, %fix, %fix, false)
 	do drawMain.onMouseMove :: onMouseMove
 	do drawMain.onMouseDownL :: onMouseDownL

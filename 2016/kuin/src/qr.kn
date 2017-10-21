@@ -28,8 +28,8 @@ func main()
 	const size: int :: 220
 	const margin: int :: 10
 	const wndSize: int :: size + 2 * margin
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, wndSize, wndSize, "Hello, QR!")
-	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSize, wndSize, %fix, %fix, false)
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, wndSize, wndSize, "Hello, QR!")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSize, wndSize, %scale, %scale, false)
 
 	while(wnd@act())
 		do draw@rect(0.0, 0.0, wndSize $ float, wndSize $ float, 16#FF6188FF)
@@ -97,12 +97,12 @@ class QrVersionInfo()
 	{struct RS_BLOCKINFO}
 	class RsBlockInfo()
 		+var ncRSBlock: int {ＲＳブロック数}
-		+var ncAllCodeWord: int {ブロック内コードワード数}
-		+var ncDataCodeWord: int {データコードワード数(コードワード数 - ＲＳコードワード数)}
+		+var ncBlockAllCodeWord: int {ブロック内コードワード数}
+		+var ncBlockDataCodeWord: int {データコードワード数(コードワード数 - ＲＳコードワード数)}
 		+func init(rsBlockInfo: []int, n: int): RsBlockInfo
 			do me.ncRSBlock :: rsBlockInfo[n]
-			do me.ncAllCodeWord :: rsBlockInfo[n + 1]
-			do me.ncDataCodeWord :: rsBlockInfo[n + 2]
+			do me.ncBlockAllCodeWord :: rsBlockInfo[n + 1]
+			do me.ncBlockDataCodeWord :: rsBlockInfo[n + 2]
 			ret me
 		end func
 	end class
@@ -371,8 +371,8 @@ class QrEncode()
 		var nBlockNo: int :: 0 {処理中ブロック番号}
 
 		{ブロック別データコードワード数}
-		var ncDataCw1: int :: @qrVersionInfo[me.m_nVersion].rsBlockInfo1[nLevel].ncDataCodeWord
-		var ncDataCw2: int :: @qrVersionInfo[me.m_nVersion].rsBlockInfo2[nLevel].ncDataCodeWord
+		var ncDataCw1: int :: @qrVersionInfo[me.m_nVersion].rsBlockInfo1[nLevel].ncBlockDataCodeWord
+		var ncDataCw2: int :: @qrVersionInfo[me.m_nVersion].rsBlockInfo2[nLevel].ncBlockDataCodeWord
 
 		{データコードワードインターリーブ配置}
 		for i(0, ncBlock1 - 1)
@@ -397,8 +397,8 @@ class QrEncode()
 		end for
 
 		{ブロック別ＲＳコードワード数(※現状では同数)}
-		var ncRSCw1: int :: @qrVersionInfo[me.m_nVersion].rsBlockInfo1[nLevel].ncAllCodeWord - ncDataCw1
-		var ncRSCw2: int :: @qrVersionInfo[me.m_nVersion].rsBlockInfo2[nLevel].ncAllCodeWord - ncDataCw2
+		var ncRSCw1: int :: @qrVersionInfo[me.m_nVersion].rsBlockInfo1[nLevel].ncBlockAllCodeWord - ncDataCw1
+		var ncRSCw2: int :: @qrVersionInfo[me.m_nVersion].rsBlockInfo2[nLevel].ncBlockAllCodeWord - ncDataCw2
 
 		{ＲＳコードワード算出}
 		do nDataCwIndex :: 0
@@ -930,7 +930,7 @@ class QrEncode()
 	備  考：総コードワード分のエリアを確保してから呼び出し
 	}
 	func GetRSCodeWord(lpbyRSWork: []bit8, ncDataCodeWord: int, ncRSCodeWord: int)
-		for(0, ncDataCodeWord - 1)
+		for(1, ncDataCodeWord)
 			if(lpbyRSWork[0] <> @x00)
 				var nExpFirst: bit8 :: @byIntToExp[lpbyRSWork[0] $ int] {初項係数より乗数算出}
 
@@ -1376,7 +1376,7 @@ class QrEncode()
 		ret nPenalty
 	end func
 
-	func toStr(): []char
+	+*func toStr(): []char
 		var retVal: []char :: ""
 		for y(0, me.m_nSymbleSize - 1)
 			for x(0, me.m_nSymbleSize - 1)

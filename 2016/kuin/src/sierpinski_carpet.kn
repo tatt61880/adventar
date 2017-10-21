@@ -4,8 +4,8 @@
 }
 func main()
 	const size: int :: 600
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, size, size, "Sierpinski carpet")
-	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, size, size, %fix, %fix, false)
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, size, size, "Sierpinski carpet")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, size, size, %scale, %scale, false)
 	while(wnd@act())
 		do draw@rect(0.0, 0.0, size $ float, size $ float, 16#FF000000)
 		do @void(0.0, 0.0, size $ float / 3.0 $ float)

@@ -5,7 +5,7 @@ func main()
 	const imagMin: float :: -1.2
 	const imagMax: float :: 1.2
 	const imagDel: float :: (imagMax - imagMin) / sizeY $ float
-	const calcNum: int :: 300
+	const calcNum: int :: 1000
 
 	const sizeX: int :: 300
 	const sizeY: int :: (sizeX $ float * (imagMax - imagMin) / (realMax - realMin)) $ int
@@ -45,8 +45,8 @@ func main()
 		end for
 	end for
 
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, wndSizeX, wndSizeY, "Mandelbrot set")
-	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeX, wndSizeY, %fix, %fix, false)
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, wndSizeX, wndSizeY, "Mandelbrot set")
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeX, wndSizeY, %scale, %scale, false)
 	while(wnd@act())
 		do draw@rect(0.0, 0.0, wndSizeX $ float, wndSizeY $ float, 16#FF6188FF)
 		for row(0, sizeY - 1)
