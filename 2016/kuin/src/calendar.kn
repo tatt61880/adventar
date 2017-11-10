@@ -20,23 +20,16 @@ func main()
 	var h: int :: (y + y / 4 - y / 100 + y / 400 + (13 * (m + 1)) / 5) % 7
 	do y :+ 1
 	var d: int :: 28 + [3, 3, (y % 400 = 0 | y % 100 <> 0 & y % 4 = 0) ?(1, 0), 3, 2, 3, 2, 3, 3, 2, 3, 2][m % 12]
-	var font: draw@Font :: draw@makeFont("Meiryo", 20, false, false, true, 0.0)
 	const wndSizeW: int :: 360
 	const wndSizeH: int :: 240
 	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, wndSizeW, wndSizeH, "Calendar")
 	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeW, wndSizeH, %scale, %scale, false)
+	var font: draw@Font :: draw@makeFont("Meiryo", 20, false, false, false, 20.0)
 	while(wnd@act())
 		do font.draw(10.0, 5.0, "\{year}/\{month}", 16#FFFFFFFF)
 		for i(h, d + h - 1)
-			do font.draw(10.0 + 50.0 * (i % 7) $ float, 40.0 * (i / 7 + 1) $ float, num2str(i - h + 1), 16#FFFFFFFF)
+			do font.draw(10.0 + 50.0 * (i % 7) $ float, 40.0 * (i / 7 + 1) $ float, (i - h + 1).toStrFmt("2d"), 16#FFFFFFFF)
 		end for
 		do draw@render(30)
 	end while
-	func num2str(num: int): []char
-		var retVal: []char :: "xx"
-		do retVal[1] :: '0'.offset(num % 10)
-		do retVal[0] :: '0'.offset(num / 10)
-		do retVal[0] :: retVal[0] = '0' ?(' ', retVal[0])
-		ret retVal
-	end func
 end func

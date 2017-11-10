@@ -8,7 +8,6 @@ func main()
 	const dd: int :: digits * ignore / d
 	var base: int :: 10 ^ d
 
-	var str: []char :: ""
 	var nume: []int :: #[dd + ignore]int
 	var carry: int :: 0
 
@@ -22,27 +21,16 @@ func main()
 			do carry :/ denom
 		end for
 		if(n = dd)
-			do str :~ "\{(digit + carry / base) / base}."
-			do str :~ @noSpaceNum((digit + carry / base) % base, d) ~ " "
+			do cui@print("\{(digit + carry / base) / base}.")
+			do cui@print(((digit + carry / base) % base).toStrFmt("0" ~ d.toStr() ~ "d") ~ " ")
 		else
-			do str :~ @noSpaceNum(digit + carry / base, d) ~ " "
+			do cui@print((digit + carry / base).toStrFmt("0" ~ d.toStr() ~ "d") ~ " ")
 			if((dd - n) % (ignore * 10) = (ignore * 9))
 				if((dd - n) % (ignore * 100) = (ignore * 99))
-					do str :~ "[\{d * (dd - n) / ignore + d}]"
+					do cui@print("[\{d * (dd - n) / ignore + d}]")
 				end if
-				do str :~ "\n  "
+				do cui@print("\n  ")
 			end if
 		end if
 	end for
-	do cui@print(str)
-end func
-
-func noSpaceNum(num: int, digit: int): []char
-	var str: []char :: ""
-	for(1, digit)
-		do str :~ (num % 10).toStr()
-		do num :/ 10
-	end for
-	do str.reverse()
-	ret str
 end func
