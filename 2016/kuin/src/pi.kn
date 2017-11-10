@@ -22,9 +22,9 @@ func main()
 		end for
 		if(n = dd)
 			do cui@print("\{(digit + carry / base) / base}.")
-			do cui@print(((digit + carry / base) % base).toStrFmt("0" ~ d.toStr() ~ "d") ~ " ")
+			do cui@print(((digit + carry / base) % base).toStrFmt("0\{d}d") ~ " ")
 		else
-			do cui@print((digit + carry / base).toStrFmt("0" ~ d.toStr() ~ "d") ~ " ")
+			do cui@print((digit + carry / base).toStrFmt("0\{d}d") ~ " ")
 			if((dd - n) % (ignore * 10) = (ignore * 9))
 				if((dd - n) % (ignore * 100) = (ignore * 99))
 					do cui@print("[\{d * (dd - n) / ignore + d}]")
