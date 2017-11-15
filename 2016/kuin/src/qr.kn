@@ -341,7 +341,7 @@ class QrEncode()
 
 		{ターミネータコード"0000"付加}
 		var ncDataCodeWord: int :: @qrVersionInfo[me.m_nVersion].ncDataCodeWord[nLevel]
-		var ncTerminater: int :: @min(4, (ncDataCodeWord * 8) - me.m_ncDataCodeWordBit)
+		var ncTerminater: int :: [4, (ncDataCodeWord * 8) - me.m_ncDataCodeWordBit].min()
 
 		if(ncTerminater > 0)
 			do me.m_ncDataCodeWordBit :: me.SetBitStream(me.m_ncDataCodeWordBit, 0b16, ncTerminater)
@@ -1410,10 +1410,6 @@ class QrEncode()
 		end for
 	end func
 end class
-
-func min(a: int, b: int): int
-	ret (a < b) ?(a, b)
-end func
 
 func memmove(toByte8s: []bit8, fromByte8s: []bit8, startIndex: int, num: int)
 	var i: int :: 0
