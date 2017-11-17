@@ -114,27 +114,18 @@ func createMaze()
 	do @goalX :: 2 * @W - @userX
 	do @goalY :: 2 * @H - @userY
 	do @carve()
-	for h(0, 2 * @H)
-		for w(0, 2 * @W)
+	for h(0, 2 * @H, 2)
+		for w(0, 2 * @W, 2)
 			do @map[h][w] :: true
 		end for
 	end for
-
 	for h(0, @H - 1)
 		for w(0, @W - 1)
 			do @map[2 * h + 1][2 * w + 1] :: false
-			if(@aisle[h][w].and(@U) <> 0b8)
-				do @map[2 * h + 0][2 * w + 1] :: false
-			end if
-			if(@aisle[h][w].and(@R) <> 0b8)
-				do @map[2 * h + 1][2 * w + 2] :: false
-			end if
-			if(@aisle[h][w].and(@D) <> 0b8)
-				do @map[2 * h + 2][2 * w + 1] :: false
-			end if
-			if(@aisle[h][w].and(@L) <> 0b8)
-				do @map[2 * h + 1][2 * w + 0] :: false
-			end if
+			do @map[2 * h + 0][2 * w + 1] :: @aisle[h][w].and(@U) = 0b8
+			do @map[2 * h + 1][2 * w + 2] :: @aisle[h][w].and(@R) = 0b8
+			do @map[2 * h + 2][2 * w + 1] :: @aisle[h][w].and(@D) = 0b8
+			do @map[2 * h + 1][2 * w + 0] :: @aisle[h][w].and(@L) = 0b8
 		end for
 	end for
 end func
