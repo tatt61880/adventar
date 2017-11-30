@@ -50,15 +50,18 @@ $utc = time();
 if(0){
 }else if($day <= 0 || 25 < $day){
 	ShowErrorMessage("無効なURLです。");
-}else if(!file_exists($adventarId_dat)){
-	ShowErrorMessage("idファイルがありません。(メンテナンス中の可能性があります。)");
 }else if(!file_exists($theme_dat)){
 	ShowErrorMessage("テーマが準備できていません。");
 }else if(!file_exists($fileurl)){
 	ShowErrorMessage("記事が準備できていません。");
 }else{
 	$theme = trim(file_get_contents($theme_dat));
-	$adventar_id = trim(file_get_contents($adventarId_dat));
+	$adventar_id = 0;
+	if(file_exists($adventarId_dat)){
+		$adventar_id = trim(file_get_contents($adventarId_dat));
+	}else{
+		$adventar_id = -1;
+	}
 
 	$header = "";
 	$footer = "";
@@ -192,10 +195,16 @@ print <<< EOD
 <body>
 <div id="container">
 <h1>$theme Advent Calendar ${year} - ${day}日目</h1>
-<p>この記事は【<a href="http://www.adventar.org/calendars/$adventar_id">$theme Advent Calendar ${year}</a>】の${day}日目の記事です。</p>
-
 EOD;
-
+if($adventar_id != -1){
+print <<< EOD
+<p>この記事は【<a href="http://www.adventar.org/calendars/$adventar_id">$theme Advent Calendar ${year}</a>】の${day}日目の記事です。</p>
+EOD;
+}else{
+print <<< EOD
+<p>この記事は【$theme Advent Calendar ${year}】の${day}日目の記事です。</p>
+EOD;
+}
 	print $header;
 if($theme == "Kuin"){
 	print <<< EOD
