@@ -11,8 +11,8 @@ var title: []char :: "2048"
 
 func main()
 	do @font :: draw@makeFont(null, (@size / 4.0) $ int, true, false, false, @size / 5.0)
-	do @wndMain :: wnd@makeWnd(null, %aspect, 400, 400, @title)
-	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, 400, 400, %scale, %scale, false)
+	do @wndMain :: wnd@makeWnd(null, %aspect, @size $ int * 4, @size $ int * 4, @title)
+	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @size $ int * 4, @size $ int * 4, %scale, %scale, false)
 	do @colors :: [0, 16#FFEEDDDD, 16#FFDDCCAA, 16#FFFFAAAA, 16#FFFF5555, 16#FFFF3333, 16#FFFF1111] ~ [16#FFCCCC44].repeat(20)
 	do wnd@onKeyPress(@onKeyPress)
 	do draw@clearColor(16#FF333333)
