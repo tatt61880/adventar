@@ -1,0 +1,14 @@
+{ AtCoder Beginner Contest 029 の D問題 「1」を解くKuinのコードです。 }
+func main()
+	var N: int
+	do cui@input().toInt(&N)
+
+	var ans: int :: 0
+	for i(0, 8)
+		do ans :+ (N / 10 ^ i + 8) / 10 * 10 ^ i
+		if((N / 10 ^ i) % 10 = 1)
+			do ans :+ N % 10 ^ i + 1
+		end if
+	end for
+	do cui@print("\{ans}\n")
+end func
