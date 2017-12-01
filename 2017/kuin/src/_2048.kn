@@ -1,0 +1,158 @@
+var size: float :: 100.0
+var r: float :: 10.0
+var s: float :: 4.0
+var font: draw@Font
+var pieces: [][]int
+var colors: []int
+var addFlag: bool
+var wndMain: wnd@Wnd 
+var drawMain: wnd@Draw
+var title: []char :: "2048"
+
+func main()
+	do @font :: draw@makeFont(null, (@size / 4.0) $ int, true, false, false, @size / 5.0)
+	do @wndMain :: wnd@makeWnd(null, %aspect, 400, 400, @title)
+	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, 400, 400, %scale, %scale, false)
+	do @colors :: [0, 16#FFEEDDDD, 16#FFDDCCAA, 16#FFFFAAAA, 16#FFFF5555, 16#FFFF3333, 16#FFFF1111] ~ [16#FFCCCC44].repeat(20)
+	do wnd@onKeyPress(@onKeyPress)
+	do draw@clearColor(16#FF333333)
+	while(@game())
+	end while
+end func
+
+func game(): bool
+	do @reset()
+	while(wnd@act())
+		do @drawPieces()
+		if(@addFlag)
+			do @addFlag :: false
+			do @add()
+			if(@gameOverCheck())
+				do @drawPieces()
+				do draw@render(60)
+				ret wnd@msgBox(@wndMain, "Game Over!\nTry again?", @title, %question, %yesNo) = %yes
+			end if
+		end if
+		do draw@render(60)
+	end while
+end func
+
+func drawPieces()
+	for y(0, 3)
+		for x(0, 3)
+			var n: int :: @pieces[y][x]
+			if(n <> 0)
+				do drawPiece(n, x $ float * @size, y $ float * @size)
+			end if
+		end for
+	end for
+	func drawPiece(n: int, x: float, y: float)
+		var num: int :: 2 ^ n
+		var color: int :: @colors[n]
+		var fontColor: int :: color % 256 < 128 ?(16#FFDDDDDD, 16#FF111111)
+		do draw@rect(x + @s, y + @r + @s, @size - 2.0 * @s, @size - 2.0 * (@r + @s), color)
+		do draw@rect(x + @s + @r, y + @s, @size - 2.0 * (@r + @s), @size - 2.0 * @s, color)
+		do draw@circle(x + @r + @s, y + @r + @s, @r, @r, color)
+		do draw@circle(x + @r + @s, y + @size - @r - @s, @r, @r, color)
+		do draw@circle(x + @size - @r - @s, y + @size - @r - @s, @r, @r, color)
+		do draw@circle(x + @size - @r - @s, y + @r + @s, @r, @r, color)
+		do @font.draw(x + (3.2 - lib@log(10.0, num $ float) $ int $ float) * @size / 8.0, y + @size / 4.0, "\{num}", fontColor)
+	end func
+end func
+
+func reset()
+	do @addFlag :: false
+	do @pieces :: #[4, 4]int
+	for(1, 2)
+		do @add()
+	end for
+end func
+
+func add()
+	var idx: [][]int :: #[0][]int
+	for y(0, 3)
+		for x(0, 3)
+			if(@pieces[y][x] = 0)
+				do idx :~ [[x, y]]
+			end if
+		end for
+	end for
+	if(^idx > 0)
+		var rnd: int :: lib@rnd(0, ^idx - 1)
+		do @pieces[idx[rnd][1]][idx[rnd][0]] :: lib@rnd(1, 2)
+	end if
+end func
+
+func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
+	switch(key)
+	case %up
+		for x(0, 3)
+			do @move(&@pieces[0][x], &@pieces[1][x], &@pieces[2][x], &@pieces[3][x])
+		end for
+	case %down
+		for x(0, 3)
+			do @move(&@pieces[3][x], &@pieces[2][x], &@pieces[1][x], &@pieces[0][x])
+		end for
+	case %left
+		for y(0, 3)
+			do @move(&@pieces[y][0], &@pieces[y][1], &@pieces[y][2], &@pieces[y][3])
+		end for
+	case %right
+		for y(0, 3)
+			do @move(&@pieces[y][3], &@pieces[y][2], &@pieces[y][1], &@pieces[y][0])
+		end for
+	end switch
+end func
+
+func move(a: &int, b: &int, c: &int, d: &int)
+	var arrPrev: []int :: [a, b, c, d]
+	var arrNext: []int :: [0]
+	for i(0, 3)
+		if(arrPrev[i] = 0)
+			skip i
+		end if
+		if(arrNext[^arrNext - 1] = 0)
+			do arrNext[^arrNext - 1] :: arrPrev[i]
+		elif(arrNext[^arrNext - 1] = arrPrev[i])
+			do arrNext[^arrNext - 1] :+ 1
+			do arrNext :~ [0]
+		else
+			do arrNext :~ [arrPrev[i]]
+		end if
+	end for
+	do arrNext :~ [0].repeat(4 - ^arrNext)
+	for i(0, 3)
+		if(arrPrev[i] <> arrNext[i])
+			do @addFlag :: true
+		end if
+	end for
+	do a :: arrNext[0]
+	do b :: arrNext[1]
+	do c :: arrNext[2]
+	do d :: arrNext[3]
+end func
+
+func gameOverCheck(): bool
+	for y(0, 3)
+		for x(0, 3)
+			if(@pieces[y][x] = 0)
+				ret false
+			end if
+		end for
+	end for
+	for y(0, 3)
+		for x(0, 2)
+			if(@pieces[y][x] = @pieces[y][x + 1])
+				ret false
+			end if
+		end for
+	end for
+	for y(0, 2)
+		for x(0, 3)
+			if(@pieces[y][x] = @pieces[y + 1][x])
+				ret false
+			end if
+		end for
+	end for
+	ret true
+end func

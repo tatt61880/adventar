@@ -154,7 +154,7 @@ EOD;
 			}
 		}
 	}else{
-		$main_html = "※未公開です。";
+		$main_html = "※未公開です。当日の午前0時0分に公開されます。";
 	}
 
 	print <<< EOD
