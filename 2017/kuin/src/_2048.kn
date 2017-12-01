@@ -1,16 +1,25 @@
-var size: float :: 100.0
-var r: float :: 10.0
-var s: float :: 4.0
+var wndMain: wnd@Wnd 
+var drawMain: wnd@Draw
 var font: draw@Font
+var title: []char :: "2048"
 var pieces: [][]int
 var colors: []int
 var nextFlag: bool
-var wndMain: wnd@Wnd 
-var drawMain: wnd@Draw
-var title: []char :: "2048"
+var clearedFlag: bool
+var size: float :: 100.0
+var r: float :: 10.0
+var s: float :: 4.0
+var startNum: int :: 2
+var rndMin: int :: 1
+var rndMax: int :: 2
 
 func main()
-	do @font :: draw@makeFont(null, (@size / 4.0) $ int, true, false, false, @size / 5.0)
+	assert @startNum > 0
+	assert @rndMin > 0
+	assert @rndMin < 10
+	assert @rndMax < 10
+	assert @rndMin <= @rndMax
+	do @font :: draw@makeFont(null, (@size / 4.0) $ int, true, false, false, @size / 4.0 / 1.1)
 	do @wndMain :: wnd@makeWnd(null, %aspect, @size $ int * 4, @size $ int * 4, @title)
 	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @size $ int * 4, @size $ int * 4, %scale, %scale, false)
 	do @colors :: [0, 16#FFEEDDDD, 16#FFDDCCAA, 16#FFFFAAAA, 16#FFFF5555, 16#FFFF3333, 16#FFFF1111] ~ [16#FFCCCC44].repeat(20)
@@ -27,7 +36,15 @@ func game(): bool
 		if(@nextFlag)
 			do @nextFlag :: false
 			do @add()
-			if(@isGameover())
+			if(!@clearedFlag & @isCleared())
+				do @drawPieces()
+				do draw@render(60)
+				if(wnd@msgBox(@wndMain, "Congratulations!\nContinue?", @title, %question, %yesNo) = %yes)
+					do @clearedFlag :: true
+				else
+					ret false
+				end if
+			elif(@isGameover())
 				do @drawPieces()
 				do draw@render(60)
 				ret wnd@msgBox(@wndMain, "Game Over!\nTry again?", @title, %question, %yesNo) = %yes
@@ -56,14 +73,15 @@ func drawPieces()
 		do draw@circle(x + @r + @s, y + @size - @r - @s, @r, @r, color)
 		do draw@circle(x + @size - @r - @s, y + @size - @r - @s, @r, @r, color)
 		do draw@circle(x + @size - @r - @s, y + @r + @s, @r, @r, color)
-		do @font.draw(x + (3.2 - lib@log(10.0, num $ float) $ int $ float) * @size / 8.0, y + @size / 4.0, "\{num}", fontColor)
+		do @font.draw(x + (3.0 - lib@log(10.0, num $ float) $ int $ float / 1.1) * @size / 8.0, y + @size / 4.0, "\{num}", fontColor)
 	end func
 end func
 
 func reset()
+	do @clearedFlag :: false
 	do @nextFlag :: false
 	do @pieces :: #[4, 4]int
-	for(1, 2)
+	for(1, @startNum)
 		do @add()
 	end for
 end func
@@ -79,7 +97,7 @@ func add()
 	end for
 	if(^xy > 0)
 		var rnd: int :: lib@rnd(0, ^xy - 1)
-		do @pieces[xy[rnd][1]][xy[rnd][0]] :: lib@rnd(1, 2)
+		do @pieces[xy[rnd][1]][xy[rnd][0]] :: lib@rnd(@rndMin, @rndMax)
 	end if
 end func
 
@@ -155,4 +173,15 @@ func isGameover(): bool
 		end for
 	end for
 	ret true
+end func
+
+func isCleared(): bool
+	for y(0, 3)
+		for x(0, 3)
+			if(@pieces[y][x] > 10)
+				ret true
+			end if
+		end for
+	end for
+	ret false
 end func
