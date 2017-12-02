@@ -11,6 +11,15 @@ var fontSmall: draw@Font
 var selected: @Hand
 var answered: bool
 var correct: bool
+const peopleNum: int :: 12
+
+enum Hand
+	paper
+	scissors
+	rock
+	drawn
+end enum
+var handStr: [][]char
 
 func main()
 	do @font :: draw@makeFont(null, 24, true, false, false, 30.0)
@@ -29,25 +38,30 @@ func main()
 	end while
 end func
 
-enum Hand
-	paper
-	scissors
-	rock
-	drawn
-end enum
-var handStr: [][]char
-
 var hands: []@Hand
 func game(): bool
-	do @hands :: #[12]@Hand
-	for i(0, 11)
-		do @hands[i] :: lib@rnd(0, 2) $ @Hand
+	do @hands :: #[@peopleNum]@Hand
+	for i(0, @peopleNum - 1)
+		do @hands[i] :: lib@rnd(2, 2) $ @Hand
 	end for
 	while(wnd@act())
+		do drawAll()
+		do draw@render(60)
+		if(@answered)
+			do @answered :: false
+			if(@correct)
+				ret true
+			else
+				do wnd@msgBox(@wndMain, "不正解です!\n\{@handStr[@selected $ int]}ではありません！", @title, %none, %ok)
+			end if
+		end if
+	end while
+
+	func drawAll()
 		for i(0, 11)
 			var x: int :: i % 4
 			var y: int :: i / 4
-			do @drawHand(@hands[i], 100.0 * x $ float, 100.0 * y $ float)
+			do drawHand(@hands[i], 100.0 * x $ float, 100.0 * y $ float)
 		end for
 		do draw@rect(0.0, 300.0, @width, @height - 300.0, 16#FFFFFFFF)
 		do @font.draw(5.0, 300.0, "勝ちの手を選択してください", 16#FF000000)
@@ -59,31 +73,21 @@ func game(): bool
 		do @fontSmall.draw(100.0, 340.0, "2", 16#FF000000)
 		do @fontSmall.draw(200.0, 340.0, "3", 16#FF000000)
 		do @fontSmall.draw(300.0, 340.0, "4", 16#FF000000)
-		do @drawHand(%rock, 0.0, 345.0)
-		do @drawHand(%scissors, 100.0, 345.0)
-		do @drawHand(%paper, 200.0, 345.0)
+		do drawHand(%rock, 0.0, 345.0)
+		do drawHand(%scissors, 100.0, 345.0)
+		do drawHand(%paper, 200.0, 345.0)
 		do @font.draw(305.0, 370.0, "あいこ", 16#FF000000)
-		do draw@render(60)
-		if(@answered)
-			do @answered :: false
-			if(@correct)
-				ret true
-			else
-				do wnd@msgBox(@wndMain, "不正解です!\n\{@handStr[@selected $ int]}ではありません！", @title, %none, %ok)
-			end if
-		end if
-	end while
-end func
-
-func drawHand(hand: @Hand, x: float, y: float)
-	switch(hand)
-	case %paper
-		do @texP.drawScale(x, y, 100.0, 100.0, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
-	case %scissors
-		do @texS.drawScale(x, y, 100.0, 100.0, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
-	case %rock
-		do @texR.drawScale(x, y, 100.0, 100.0, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
-	end switch
+		func drawHand(hand: @Hand, x: float, y: float)
+			switch(hand)
+			case %paper
+				do @texP.drawScale(x, y, 100.0, 100.0, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
+			case %scissors
+				do @texS.drawScale(x, y, 100.0, 100.0, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
+			case %rock
+				do @texR.drawScale(x, y, 100.0, 100.0, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
+			end switch
+		end func
+	end func
 end func
 
 func drawMainOnMouseUpL(wnd: wnd@Draw, x: int, y: int)
@@ -122,31 +126,55 @@ func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
 end func
 
 func judge(): @Hand
-	var count_p: int :: 0
-	var count_s: int :: 0
-	var count_r: int :: 0
+	var countPaper: int :: 0
+	var countScissors: int :: 0
+	var countRock: int :: 0
 	for i(0, ^@hands - 1)
 		switch(@hands[i])
 		case %paper
-			do count_p :+ 1
+			do countPaper :+ 1
 		case %scissors
-			do count_s :+ 1
+			do countScissors :+ 1
 		case %rock
-			do count_r :+ 1
+			do countRock :+ 1
 		end switch
 	end for
-	if(count_p = count_s & count_s = count_r)
+	if(countPaper = countScissors & countPaper = countRock)
 		ret %drawn
 	end if
-	if(count_p >= count_s)
-		if(count_s < count_r)
+	if(countPaper = @peopleNum | countScissors = @peopleNum | countRock = @peopleNum)
+		ret %drawn
+	end if
+	if(countPaper = 0)
+		if(countScissors < countRock)
 			ret %scissors
 		else
 			ret %rock
 		end if
-	else
-		if(count_p <= count_r)
+	end if
+	if(countScissors = 0)
+		if(countRock < countPaper)
+			ret %rock
+		else
 			ret %paper
+		end if
+	end if
+	if(countRock = 0)
+		if(countPaper < countScissors)
+			ret %paper
+		else
+			ret %scissors
+		end if
+	end if
+	if(countPaper < countScissors)
+		if(countPaper <= countRock)
+			ret %paper
+		else
+			ret %rock
+		end if
+	else
+		if(countScissors < countRock)
+			ret %scissors
 		else
 			ret %rock
 		end if

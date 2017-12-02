@@ -34,29 +34,26 @@ func game(): bool
 	do @reset()
 	while(wnd@act())
 		do @waitFlag :: false
-		do @drawPieces()
+		do @drawAll()
 		if(@nextFlag)
 			do @nextFlag :: false
 			do @add()
 			if(!@clearedFlag & @isCleared())
-				do @drawPieces()
-				do draw@render(60)
+				do @drawAll()
 				if(wnd@msgBox(@wndMain, "Congratulations!\nContinue?", @title, %question, %yesNo) = %yes)
 					do @clearedFlag :: true
 				else
 					ret false
 				end if
 			elif(@isGameover())
-				do @drawPieces()
-				do draw@render(60)
+				do @drawAll()
 				ret wnd@msgBox(@wndMain, "Game Over!\nTry again?", @title, %question, %yesNo) = %yes
 			end if
 		end if
-		do draw@render(60)
 	end while
 end func
 
-func drawPieces()
+func drawAll()
 	for y(0, 3)
 		for x(0, 3)
 			var n: int :: @pieces[y][x]
@@ -77,6 +74,7 @@ func drawPieces()
 		do draw@circle(x + @size - @r - @s, y + @r + @s, @r, @r, color)
 		do @font.draw(x + (3.0 - lib@log(10.0, num $ float) $ int $ float / 1.1) * @size / 8.0, y + @size / 4.0, "\{num}", fontColor)
 	end func
+	do draw@render(60)
 end func
 
 func reset()
