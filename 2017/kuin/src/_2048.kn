@@ -5,6 +5,7 @@ var title: []char :: "2048"
 var pieces: [][]int
 var colors: []int
 var nextFlag: bool
+var waitFlag: bool
 var clearedFlag: bool
 var size: float :: 100.0
 var r: float :: 10.0
@@ -32,6 +33,7 @@ end func
 func game(): bool
 	do @reset()
 	while(wnd@act())
+		do @waitFlag :: false
 		do @drawPieces()
 		if(@nextFlag)
 			do @nextFlag :: false
@@ -80,6 +82,7 @@ end func
 func reset()
 	do @clearedFlag :: false
 	do @nextFlag :: false
+	do @waitFlag :: false
 	do @pieces :: #[4, 4]int
 	for(1, @startNum)
 		do @add()
@@ -102,6 +105,10 @@ func add()
 end func
 
 func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
+	if(@waitFlag)
+		ret
+	end if
+	do @waitFlag :: true
 	switch(key)
 	case %up
 		for x(0, 3)
