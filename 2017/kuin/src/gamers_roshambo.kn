@@ -1,9 +1,6 @@
-const title: []char :: "ゲーマーじゃんけんの判定をするゲーム"
+const title: []char :: "ゲーマーじゃんけん判定ゲーム"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
-const peopleNum: int :: 12
-const width: float :: 400.0
-const height: float :: 450.0
 var texP: draw@Tex
 var texS: draw@Tex
 var texR: draw@Tex
@@ -12,7 +9,16 @@ var fontSmall: draw@Font
 var selected: @Hand
 var answered: bool
 var correct: bool
+var peopleNum: int
 const backgroundColor: int :: 16#FF333333
+const peopleMin: int :: 2
+const peopleMax: int :: 15
+const widthNum: int :: 5
+const heightNum: int :: (@peopleMax + @widthNum - 1) / @widthNum
+const size: float :: 100.0
+const width: float :: @widthNum $ float * @size
+const height: float :: (@heightNum + 1) $ float * @size + @size * 0.5
+const selectAreaY: float :: @heightNum $ float * @size + @size * 0.5
 
 enum Hand
 	paper
@@ -23,9 +29,12 @@ end enum
 var handStr: [][]char
 
 func main()
-	assert @peopleNum <= 12
-	do @font :: draw@makeFont(null, 24, true, false, false, 30.0)
-	do @fontSmall :: draw@makeFont(null, 12, true, false, false, 15.0)
+	assert @size >= 50.0
+	assert @size <= 100.0
+	assert @peopleMin >= 2
+	assert @peopleMax <= 16
+	do @font :: draw@makeFont(null, (0.24 * @size) $ int, true, false, false, 0.30 * @size)
+	do @fontSmall :: draw@makeFont(null, (0.12 * @size) $ int, true, false, false, 0.15 * @size)
 	do @texP :: draw@makeTex("res/janken_pa.png")
 	do @texS :: draw@makeTex("res/janken_choki.png")
 	do @texR :: draw@makeTex("res/janken_gu.png")
@@ -34,7 +43,7 @@ func main()
 	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @width $ int, @height $ int, %scale, %scale, false)
 	do @drawMain.onMouseUpL :: @drawMainOnMouseUpL
 	do draw@clearColor(@backgroundColor)
-	do wnd@msgBox(@wndMain, "ゲーマーじゃんけんの勝敗判定を素早く行えるように訓練するゲームです。\nゲーマーじゃんけんは少数派の手が勝ちのルールです。\n少数派の手が複数ある場合はその中でじゃんけんの強い方が勝ちです。\n\{@peopleNum}人でゲーマーじゃんけんが行われます。勝敗判定を行ってください。", @title, %none, %ok)
+	do wnd@msgBox(@wndMain, "ゲーマーじゃんけんの勝敗判定を素早く行えるように訓練するゲームです。\nゲーマーじゃんけんは少数派の手が勝ちのルールです。\n少数派の手が複数ある場合はその中でじゃんけんの強い方が勝ちです。\n\{@peopleMax}人以下でゲーマーじゃんけんが行われます。勝敗判定を行ってください。", @title, %none, %ok)
 	do wnd@onKeyPress(@onKeyPress)
 	while(@game())
 	end while
@@ -42,13 +51,13 @@ end func
 
 var hands: []@Hand
 func game(): bool
+	do @peopleNum :: lib@rnd(@peopleMin, @peopleMax)
 	do @hands :: #[@peopleNum]@Hand
 	for i(0, @peopleNum - 1)
 		do @hands[i] :: lib@rnd(0, 2) $ @Hand
 	end for
 	while(wnd@act())
 		do drawAll()
-		do draw@render(60)
 		if(@answered)
 			do @answered :: false
 			if(@correct)
@@ -60,51 +69,55 @@ func game(): bool
 	end while
 
 	func drawAll()
+		const lineColor: int :: 16#FFAAAAAA
+		const fontColor: int :: 16#FF000000
 		for i(0, @peopleNum - 1)
-			var x: int :: i % 4
-			var y: int :: i / 4
-			do drawHand(@hands[i], 100.0 * x $ float, 100.0 * y $ float)
+			do drawHand(@size * (i % @widthNum) $ float, @size * (i / @widthNum) $ float, @hands[i])
 		end for
-		do draw@rect(0.0, 300.0, @width, @height - 300.0, 16#FFFFFFFF)
-		do @font.draw(5.0, 300.0, "勝ちの手を選択してください", 16#FF000000)
-		do draw@line(0.0, 340.0, @width, 340.0, 16#FFAAAAAA)
-		do draw@line(100.0, 340.0, 100.0, @height, 16#FFAAAAAA)
-		do draw@line(200.0, 340.0, 200.0, @height, 16#FFAAAAAA)
-		do draw@line(300.0, 340.0, 300.0, @height, 16#FFAAAAAA)
-		do @fontSmall.draw(0.0, 340.0, "1", 16#FF000000)
-		do @fontSmall.draw(100.0, 340.0, "2", 16#FF000000)
-		do @fontSmall.draw(200.0, 340.0, "3", 16#FF000000)
-		do @fontSmall.draw(300.0, 340.0, "4", 16#FF000000)
-		do drawHand(%rock, 0.0, 345.0)
-		do drawHand(%scissors, 100.0, 345.0)
-		do drawHand(%paper, 200.0, 345.0)
-		do @font.draw(305.0, 370.0, "あいこ", 16#FF000000)
-		func drawHand(hand: @Hand, x: float, y: float)
+		do draw@rect(0.0, @heightNum $ float * @size, @width, @height - @heightNum $ float * @size, 16#FFFFFFFF)
+		do draw@line(0.0, @selectAreaY, @width, @selectAreaY, lineColor)
+		do draw@line(@width / 4.0 * 1.0, @selectAreaY, @width / 4.0 * 1.0, @height, lineColor)
+		do draw@line(@width / 4.0 * 2.0, @selectAreaY, @width / 4.0 * 2.0, @height, lineColor)
+		do draw@line(@width / 4.0 * 3.0, @selectAreaY, @width / 4.0 * 3.0, @height, lineColor)
+		const xx: float :: (@width / 4.0 - @size) / 2.0
+		do drawHand(xx + @width / 4.0 * 0.0, @selectAreaY, %rock)
+		do drawHand(xx + @width / 4.0 * 1.0, @selectAreaY, %scissors)
+		do drawHand(xx + @width / 4.0 * 2.0, @selectAreaY, %paper)
+		do @font.draw(xx + @width / 4.0 * 3.0 + 5.0, @selectAreaY + 0.3 * @size, "あいこ", fontColor)
+		do @font.draw(5.0, @heightNum $ float * @size, "勝ちの手を選択してください", fontColor)
+		do @fontSmall.draw(@width / 4.0 * 0.0 + 2.0, @selectAreaY, "1", fontColor)
+		do @fontSmall.draw(@width / 4.0 * 1.0 + 2.0, @selectAreaY, "2", fontColor)
+		do @fontSmall.draw(@width / 4.0 * 2.0 + 2.0, @selectAreaY, "3", fontColor)
+		do @fontSmall.draw(@width / 4.0 * 3.0 + 2.0, @selectAreaY, "4", fontColor)
+		do draw@render(60)
+
+		func drawHand(x: float, y: float, hand: @Hand)
 			switch(hand)
 			case %paper
-				do @texP.drawScale(x, y, 100.0, 100.0, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
+				do @texP.drawScale(x, y, @size, @size, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
 			case %scissors
-				do @texS.drawScale(x, y, 100.0, 100.0, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
+				do @texS.drawScale(x, y, @size, @size, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
 			case %rock
-				do @texR.drawScale(x, y, 100.0, 100.0, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
+				do @texR.drawScale(x, y, @size, @size, 0.0, 0.0, 256.0, 256.0, 16#FFFFFFFF)
 			end switch
 		end func
 	end func
 end func
 
 func drawMainOnMouseUpL(wnd: wnd@Draw, x: int, y: int)
-	if(y < 340)
+	if(y < @selectAreaY $ int)
 		ret
 	end if
-	if(x < 100)
+	switch(x / @size $ int)
+	case 0
 		do @selected :: %rock
-	elif(x < 200)
+	case 1
 		do @selected :: %scissors
-	elif(x < 300)
+	case 2
 		do @selected :: %paper
-	else
+	case 3
 		do @selected :: %drawn
-	end if
+	end switch
 	do @answered :: true
 	do @correct :: @judge() = @selected
 end func
