@@ -108,7 +108,7 @@ func drawMainOnMouseUpL(wnd: wnd@Draw, x: int, y: int)
 	if(y < @selectAreaY $ int)
 		ret
 	end if
-	switch(x / @size $ int)
+	switch(x / (@width / 4.0) $ int)
 	case 0
 		do @selected :: %rock
 	case 1
