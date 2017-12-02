@@ -1,18 +1,18 @@
+const title: []char :: "2048"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
 var font: draw@Font
-var title: []char :: "2048"
 var pieces: [][]int
 var colors: []int
 var nextFlag: bool
 var waitFlag: bool
 var clearedFlag: bool
-var size: float :: 100.0
-var r: float :: 10.0
-var s: float :: 4.0
-var startNum: int :: 2
-var rndMin: int :: 1
-var rndMax: int :: 2
+const size: float :: 100.0
+const r: float :: 10.0
+const s: float :: 4.0
+const startNum: int :: 2
+const rndMin: int :: 1
+const rndMax: int :: 2
 
 func main()
 	assert @startNum > 0
