@@ -106,7 +106,7 @@ end func
 
 func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
 	if(@waitFlag)
-		ret
+		ret false
 	end if
 	do @waitFlag :: true
 	switch(key)
@@ -127,6 +127,7 @@ func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
 			do @move(&@pieces[y][3], &@pieces[y][2], &@pieces[y][1], &@pieces[y][0])
 		end for
 	end switch
+	ret false
 end func
 
 func move(a: &int, b: &int, c: &int, d: &int)
