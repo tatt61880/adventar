@@ -1,12 +1,12 @@
-var width: float :: 400.0
-var height: float :: 450.0
+const title: []char :: "ゲーマーじゃんけんの判定をするゲーム"
+var wndMain: wnd@Wnd 
+var drawMain: wnd@Draw
+const width: float :: 400.0
+const height: float :: 450.0
 var texP: draw@Tex
 var texS: draw@Tex
 var texR: draw@Tex
 var font: draw@Font
-var wndMain: wnd@Wnd 
-var drawMain: wnd@Draw
-var title: []char :: "ゲーマーじゃんけんの判定をするゲーム"
 var selected: @Hand
 var answered: bool
 var correct: bool
