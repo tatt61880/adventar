@@ -7,12 +7,14 @@ var texP: draw@Tex
 var texS: draw@Tex
 var texR: draw@Tex
 var font: draw@Font
+var fontSmall: draw@Font
 var selected: @Hand
 var answered: bool
 var correct: bool
 
 func main()
 	do @font :: draw@makeFont(null, 24, true, false, false, 30.0)
+	do @fontSmall :: draw@makeFont(null, 12, true, false, false, 15.0)
 	do @texP :: draw@makeTex("res/janken_pa.png")
 	do @texS :: draw@makeTex("res/janken_choki.png")
 	do @texR :: draw@makeTex("res/janken_gu.png")
@@ -22,6 +24,7 @@ func main()
 	do @drawMain.onMouseUpL :: @drawMainOnMouseUpL
 	do draw@clearColor(16#FF333333)
 	do wnd@msgBox(@wndMain, "ゲーマーじゃんけんの勝敗判定を素早く行えるように訓練するゲームです。\nゲーマーじゃんけんは少数派の手が勝ちのルールです。\n少数派の手が複数ある場合はその中でじゃんけんの強い方が勝ちです。\n12人でゲーマーじゃんけんが行われます。勝敗判定を行ってください。", @title, %none, %ok)
+	do wnd@onKeyPress(@onKeyPress)
 	while(@game())
 	end while
 end func
@@ -52,6 +55,10 @@ func game(): bool
 		do draw@line(100.0, 340.0, 100.0, @height, 16#FFAAAAAA)
 		do draw@line(200.0, 340.0, 200.0, @height, 16#FFAAAAAA)
 		do draw@line(300.0, 340.0, 300.0, @height, 16#FFAAAAAA)
+		do @fontSmall.draw(0.0, 340.0, "1", 16#FF000000)
+		do @fontSmall.draw(100.0, 340.0, "2", 16#FF000000)
+		do @fontSmall.draw(200.0, 340.0, "3", 16#FF000000)
+		do @fontSmall.draw(300.0, 340.0, "4", 16#FF000000)
 		do @drawHand(%rock, 0.0, 345.0)
 		do @drawHand(%scissors, 100.0, 345.0)
 		do @drawHand(%paper, 200.0, 345.0)
@@ -83,7 +90,6 @@ func drawMainOnMouseUpL(wnd: wnd@Draw, x: int, y: int)
 	if(y < 340)
 		ret
 	end if
-	var result: @Hand :: @judge()
 	if(x < 100)
 		do @selected :: %rock
 	elif(x < 200)
@@ -94,7 +100,25 @@ func drawMainOnMouseUpL(wnd: wnd@Draw, x: int, y: int)
 		do @selected :: %drawn
 	end if
 	do @answered :: true
-	do @correct :: result = @selected
+	do @correct :: @judge() = @selected
+end func
+
+func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
+	switch(key)
+	case %_1
+		do @selected :: %rock
+	case %_2
+		do @selected :: %scissors
+	case %_3
+		do @selected :: %paper
+	case %_4
+		do @selected :: %drawn
+	default
+		ret false
+	end switch
+	do @answered :: true
+	do @correct :: @judge() = @selected
+	ret false
 end func
 
 func judge(): @Hand
