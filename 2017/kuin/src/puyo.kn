@@ -13,7 +13,7 @@ const wallColor: int :: 16#FFFF8800
 var board: [][]@Puyo
 var colorArray: []int
 var puyopuyo: @Puyopuyo
-const frameDown: int :: 40
+const frameDown: int :: 35
 const startX: int :: 2
 
 func main()
@@ -166,7 +166,9 @@ func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
 	if(!@inputEnable)
 		ret false
 	end if
-	do @inputEnable :: false
+	if(!@pausedFlag)
+		do @inputEnable :: false
+	end if
 	switch(key)
 	case %enter
 		do @puyopuyo.changeColor()
@@ -181,6 +183,10 @@ func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
 		do @puyopuyo.move(-1, 0)
 	case %right
 		do @puyopuyo.move(1, 0)
+	case %up
+		if(@pausedFlag)
+			do @puyopuyo.move(0, -1)
+		end if
 	case %down
 		do @puyopuyo.move(0, 1)
 	end switch
