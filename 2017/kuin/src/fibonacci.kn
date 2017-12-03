@@ -1,0 +1,9 @@
+func main()
+	var a: int :: 0
+	var b: int :: 1
+	for(1, 91)
+		do cui@print("\{a}\n")
+		do a :$ b
+		do b :+ a
+	end for
+end func
