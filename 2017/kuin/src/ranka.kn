@@ -1,4 +1,4 @@
-var title: []char :: "ぷよぷよっぽい何か"
+var title: []char :: "イージー碁:Ranka(ランカ)"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
 var inputEnable: bool
@@ -22,7 +22,7 @@ func main()
 	do @font :: draw@makeFont(null, (@size / 2.0) $ int, true, false, true, 0.0)
 	do @fontSmall :: draw@makeFont(null, (@size / 3.0) $ int, true, false, true, 0.0)
 	do wnd@onKeyPress(@onKeyPress)
-	do wnd@msgBox(@wndMain, "【操作方法】\n移動:[←][↓][→]\n回転:[a][s]\n色替え:[Enter]\nポーズ:[Space]", @title, %none, %ok)
+	do wnd@msgBox(@wndMain, "相手のコマを先に5つ取った方が勝ちです！", @title, %none, %ok)
 	do @colorArray :: [0, 16#FFFF0000, 16#FF00AA00, 16#FF0000FF, 16#FFFFFF00]
 	assert ^@colorArray = (%colorNum $ @Color $ int)
 	while(@game())

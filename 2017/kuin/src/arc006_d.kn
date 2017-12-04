@@ -1,0 +1,19 @@
+{ AtCoder Regular Contest 006 の D問題 「アルファベット探し」を解くKuinのコードです。 }
+func main()
+	var H: int
+	var W: int
+	var HW: [][]char :: cui@input().split(" ")
+	do HW[0].toInt(&H)
+	do HW[1].toInt(&W)
+	var c: [][]char :: #[H, W]char
+
+	var aCnt: int
+	var bCnt: int
+	var cCnt: int
+
+	for h(0, H - 1)
+		do c[h] :: cui@input()
+	end for
+
+	do cui@print("\{aCnt} \{bCnt} \{cCnt}\n")
+end func
