@@ -1,4 +1,4 @@
-var title: []char :: "Ranka(ランカ)っぽい何か"
+var title: []char :: "Ranka(ランカ)のような何か"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
 var font: draw@Font
@@ -7,13 +7,15 @@ const height: int :: 6
 const size: float :: 50.0
 var board: [][][]@Ranka
 var colorArray: []int
+const lineColor: int :: 16#FF333333
 
 func main()
-	do @wndMain :: wnd@makeWnd(null, %aspect, (@width $ float * @size * 1.5) $ int, (@height $ float * @size * 1.5) $ int, @title)
+	do @wndMain :: wnd@makeWnd(null, %fix, (@width $ float * @size * 1.5) $ int, (@height $ float * @size * 1.5) $ int, @title)
 	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, (@width $ float * @size * 1.5) $ int, (@height $ float * @size * 1.5) $ int, %scale, %scale, false)
 	do @font :: draw@makeFont(null, (@size / 2.0) $ int, true, false, true, 0.0)
 	do wnd@msgBox(@wndMain, "イージー碁:Ranka(ランカ)というゲームを作ろうとしている途中です。\n相手のコマを先に5つ取った方が勝ちのゲームなのですが、取るところを実装していません！", @title, %none, %ok)
-	do @colorArray :: [16#FF888888, 16#FFFF0000, 16#FF00AA00]
+	do @colorArray :: [16#FFCCCCCC, 16#FFFF0000, 16#FF00AA00]
+	do draw@clearColor(16#FFFFFFFF)
 	do @drawMain.onMouseUpL :: @drawMainOnMouseUpL
 	while(@game())
 	end while
@@ -91,13 +93,10 @@ class Ranka()
 		ret me
 	end func
 	+func draw()
-		if(me.color <> %none)
-			do draw@tri(me.x1, me.y1, me.x2, me.y2, me.x3, me.y3, @colorArray[me.color $ int])
-		else
-			do draw@line(me.x1, me.y1, me.x2, me.y2, @colorArray[me.color $ int])
-			do draw@line(me.x2, me.y2, me.x3, me.y3, @colorArray[me.color $ int])
-			do draw@line(me.x3, me.y3, me.x1, me.y1, @colorArray[me.color $ int])
-		end if
+		do draw@tri(me.x1, me.y1, me.x2, me.y2, me.x3, me.y3, @colorArray[me.color $ int])
+		do draw@line(me.x1, me.y1, me.x2, me.y2, @lineColor)
+		do draw@line(me.x2, me.y2, me.x3, me.y3, @lineColor)
+		do draw@line(me.x3, me.y3, me.x1, me.y1, @lineColor)
 	end func
 	+func isInside(x: float, y: float): bool
 		ret crossProduct(me.x2 - me.x1, me.y2 - me.y1, x - me.x1, y - me.y1) < 0.0 &
