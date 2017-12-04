@@ -1,272 +1,111 @@
-var title: []char :: "イージー碁:Ranka(ランカ)"
+var title: []char :: "Ranka(ランカ)っぽい何か"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
-var inputEnable: bool
-var pausedFlag: bool
 var font: draw@Font
-var fontSmall: draw@Font
 const width: int :: 6
-const height: int :: 12
-const size: float :: 35.0
-const r: float :: @size / 2.0
-const wallColor: int :: 16#FFFF8800
-var board: [][]@Puyo
+const height: int :: 6
+const size: float :: 50.0
+var board: [][][]@Ranka
 var colorArray: []int
-var puyopuyo: @Puyopuyo
-const frameDown: int :: 35
-const startX: int :: 2
 
 func main()
-	do @wndMain :: wnd@makeWnd(null, %aspect, (@width + 2) * @size $ int, (@height + 1) * @size $ int, @title)
-	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, (@width + 2) * @size $ int, (@height + 1) * @size $ int, %scale, %scale, false)
+	do @wndMain :: wnd@makeWnd(null, %aspect, (@width $ float * @size * 1.5) $ int, (@height $ float * @size * 1.5) $ int, @title)
+	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, (@width $ float * @size * 1.5) $ int, (@height $ float * @size * 1.5) $ int, %scale, %scale, false)
 	do @font :: draw@makeFont(null, (@size / 2.0) $ int, true, false, true, 0.0)
-	do @fontSmall :: draw@makeFont(null, (@size / 3.0) $ int, true, false, true, 0.0)
-	do wnd@onKeyPress(@onKeyPress)
-	do wnd@msgBox(@wndMain, "相手のコマを先に5つ取った方が勝ちです！", @title, %none, %ok)
-	do @colorArray :: [0, 16#FFFF0000, 16#FF00AA00, 16#FF0000FF, 16#FFFFFF00]
-	assert ^@colorArray = (%colorNum $ @Color $ int)
+	do wnd@msgBox(@wndMain, "イージー碁:Ranka(ランカ)というゲームを作ろうとしている途中です。\n相手のコマを先に5つ取った方が勝ちのゲームなのですが、取るところを実装していません！", @title, %none, %ok)
+	do @colorArray :: [16#FF888888, 16#FFFF0000, 16#FF00AA00]
+	do @drawMain.onMouseUpL :: @drawMainOnMouseUpL
 	while(@game())
 	end while
 end func
 
-var time: int
 func game(): bool
 	do @reset()
+	do @nextColor :: %red
 	while gameLoop(wnd@act())
 		do @drawAll()
-		if(@pausedFlag)
-			skip gameLoop
-		end if
-		do @time :+ 1
-		do @inputEnable :: (@time > 0)
-		if(!@act())
-			ret wnd@msgBox(@wndMain, "Game Over!\nTry again?", @title, %question, %yesNo) = %yes
-		end if
 	end while
 end func
 
-func act(): bool
-	if(@time = 0 | @time < -@frameDown)
-		for x(0, @width - 1)
-			for y(@height, 0, -1)
-				if(@board[x][y] <>& null)
-					if(@board[x][y].movable(0, 1))
-						do @time :: -@frameDown - 2
-						do @board[x][y + 1] :: ##@board[x][y]
-						do @board[x][y + 1].move(0, 1)
-						do @board[x][y] :: null
-					end if
-				end if
-			end for
-		end for
-	elif(@time = -1)
-		for x(0, @width - 1)
-			for y(1, @height)
-				if(@board[x][y] <>& null & !(x = @startX & y = 1))
-					var count: int :: 1
-					do @board[x][y].f :: true
-					var color: @Color :: @board[x][y].color
-					var qu: queue<[]int> :: #queue<[]int>
-					do qu.add([x, y])
-					while(^qu <> 0)
-						var pos: []int :: qu.get()
-						if(sameColor(pos[0] + 1, pos[1], color, &count))
-							do qu.add(##[pos[0] + 1, pos[1]])
-						end if
-						if(sameColor(pos[0] - 1, pos[1], color, &count))
-							do qu.add(##[pos[0] - 1, pos[1]])
-						end if
-						if(sameColor(pos[0], pos[1] + 1, color, &count))
-							do qu.add(##[pos[0], pos[1] + 1])
-						end if
-						if(sameColor(pos[0], pos[1] - 1, color, &count))
-							do qu.add(##[pos[0], pos[1] - 1])
-						end if
-					end while
-					for xx(0, @width - 1)
-						for yy(1, @height)
-							if(@board[xx][yy] <>& null & @board[xx][yy].f)
-								if(count >= 4)
-									do @board[xx][yy] :: null
-									do @time :: -@frameDown
-								else
-									do @board[xx][yy].f :: false
-								end if
-							end if
-						end for
-					end for
-				end if
-			end for
-		end for
-
-		func sameColor(x: int, y: int, color: @Color, count: &int): bool
-			if(x < 0 | @width <= x | y < 1 | @height < y | @board[x][y] =& null | (x = @startX & y = 1))
-				ret false
-			end if
-			if(!@board[x][y].f & @board[x][y].color = color)
-				do @board[x][y].f :: true
-				do count :+ 1
-				ret true
-			else
-				ret false
-			end if
-		end func
-	elif(@time = @frameDown)
-		do @time :: 0
-		if(!@puyopuyo.move(0, 1))
-			do @time :: -@frameDown
-			do @inputEnable :: false
-			do @board[@puyopuyo.puyo0.x][@puyopuyo.puyo0.y] :: ##@puyopuyo.puyo0
-			do @board[@puyopuyo.puyo1.x][@puyopuyo.puyo1.y] :: ##@puyopuyo.puyo1
-			do @puyopuyo :: #@Puyopuyo
-			ret (@board[@startX][1] =& null)
-		end if
-	end if
-	ret true
-end func
-
 func drawAll()
-	do drawWall()
-	for x(0, @width - 1)
-		for y(0, @height)
-			if(@board[x][y] <>& null)
-				do @board[x][y].draw()
-			end if
+	do drawLines()
+	for i(0, 1)
+		for x(0, @width - 1)
+			for y(0, @height - 1)
+				if(@board[i][x][y] <>& null)
+					do @board[i][x][y].draw()
+				end if
+			end for
 		end for
 	end for
-	if(@time >= 0)
-		do @puyopuyo.draw()
-	end if
-	if(@pausedFlag)
-		do draw@rect(0.0, 0.0, (@width + 2) $ float * @size, (@height + 1) $ float * @size, 16#A0000000)
-		do @font.draw(@size * 2.5, @size * 5.0, "[Paused]", 16#FFFFFFFF)
-		do @fontSmall.draw(@size * 2.2, @size * 6.0, "Press space-key", 16#FFFFFFFF)
-		do @fontSmall.draw(@size * 2.7, @size * 6.7, "to continue", 16#FFFFFFFF)
-	end if
 	do draw@render(60)
 
-	func drawWall()
-		for y(0, @height)
-			do draw@rect(0.0, y $ float * @size, @size - 2.0, @size - 2.0, @wallColor)
-			do draw@rect((@width + 1) $ float * @size, y $ float * @size, @size - 2.0, @size - 2.0, @wallColor)
-		end for
-		for x(1, @width)
-			do draw@rect(x $ float * @size, @height $ float * @size, @size - 2.0, @size - 2.0, @wallColor)
-		end for
+	func drawLines()
 	end func
 end func
 
 func reset()
-	do @board :: #[@width, @height + 1]@Puyo
-	do @puyopuyo :: #@Puyopuyo
-	do @inputEnable :: true
-	do @pausedFlag :: false
+	do @board :: #[2, @width, @height]@Ranka
+	for inverted(0, 1)
+		for x(0, @width - 1)
+			for y(0, @height - 1)
+				if(x + y + inverted >= 3 & x + y + inverted <= 8)
+					do @board[inverted][x][y] :: (#@Ranka).init(x $ float + y $ float * 0.5, y $ float * 3.0 ^ 0.5 / 2.0 + 2.0, inverted $ bool)
+					;do @board[inverted][x][y].color :: (inverted + 1) $ @Color
+				end if
+			end for
+		end for
+	end for
 end func
 
-func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
-	if(!@inputEnable)
-		ret false
-	end if
-	if(!@pausedFlag)
-		do @inputEnable :: false
-	end if
-	switch(key)
-	case %enter
-		do @puyopuyo.changeColor()
-	case %space
-		do @pausedFlag :: !@pausedFlag
-		do @inputEnable :: true
-	case %a
-		do @puyopuyo.rotate(false)
-	case %s
-		do @puyopuyo.rotate(true)
-	case %left
-		do @puyopuyo.move(-1, 0)
-	case %right
-		do @puyopuyo.move(1, 0)
-	case %up
-		if(@pausedFlag)
-			do @puyopuyo.move(0, -1)
-		end if
-	case %down
-		do @puyopuyo.move(0, 1)
-	end switch
-	ret false
-end func
-
-class Puyopuyo()
-	+var puyo0: @Puyo
-	+var puyo1: @Puyo
-	*func ctor()
-		do me.puyo0 :: (#@Puyo).init(@startX, 1)
-		do me.puyo1 :: (#@Puyo).init(@startX, 0)
-	end func
-	+func move(x: int, y: int): bool
-		if(!me.puyo0.movable(x, y) | !me.puyo1.movable(x, y))
-			ret false
-		end if
-		do me.puyo0.move(x, y)
-		do me.puyo1.move(x, y)
-		ret true
-	end func
-	+func rotate(rotCw: bool)
-		var newX: int :: me.puyo1.y - me.puyo0.y
-		var newY: int :: me.puyo1.x - me.puyo0.x
-		if(rotCw)
-			do newX :* -1
-		else
-			do newY :* -1
-		end if
-		if(me.puyo0.movable(newX, newY))
-			do me.puyo1.x :: me.puyo0.x + newX
-			do me.puyo1.y :: me.puyo0.y + newY
-		elif(me.puyo0.movable(-newX, -newY))
-			do me.puyo1.x :: me.puyo0.x
-			do me.puyo1.y :: me.puyo0.y
-			do me.puyo0.x :: me.puyo0.x - newX
-			do me.puyo0.y :: me.puyo0.y - newY
-		end if
-	end func
-	+func changeColor()
-		do me.puyo0.changeColor()
-		do me.puyo1.changeColor()
-	end func
-	+func draw()
-		do me.puyo0.draw()
-		do me.puyo1.draw()
-	end func
-end class
-
-class Puyo()
-	+var x: int
-	+var y: int
+class Ranka()
+	var x1: float
+	var y1: float
+	var x2: float
+	var y2: float
+	var x3: float
+	var y3: float
+	+var inverted: bool
 	+var f: bool
 	+var color: @Color
-	+func init(x: int, y: int): @Puyo
-		do me.x :: x
-		do me.y :: y
+	+func init(x: float, y: float, inverted: bool): @Ranka
+		var yy: float :: 3.0 ^ 0.5 / 2.0
+		do me.inverted :: inverted
 		do me.f :: false
-		do me.color :: lib@rnd(1, (%colorNum $ @Color $ int) - 1) $ @Color
+		do me.color :: %none
+		if(me.inverted)
+			do me.x1 :: (x + 1.5) * @size
+			do me.y1 :: (y + yy) * @size
+			do me.x2 :: (x + 1.0) * @size
+			do me.y2 :: y * @size
+			do me.x3 :: (x + 0.5) * @size
+			do me.y3 :: (y + yy) * @size
+		else
+			do me.x1 :: x * @size
+			do me.y1 :: y * @size
+			do me.x2 :: (x + 0.5) * @size
+			do me.y2 :: (y + yy) * @size
+			do me.x3 :: (x + 1.0) * @size
+			do me.y3 :: y * @size
+		end if
 		ret me
 	end func
-	+func movable(x: int, y: int): bool
-		ret 0 <= me.x + x & me.x + x < @width &
-		| 0 <= me.y + y & me.y + y <= @height &
-		| @board[me.x + x][me.y + y] =& null
-	end func
-	+func move(x: int, y: int)
-		do me.x :+ x
-		do me.y :+ y
-	end func
-	+func changeColor()
-		do me.color :: lib@rnd(1, (%colorNum $ @Color $ int) - 1) $ @Color
-	end func
 	+func draw()
-		do draw@circle(@size * (me.x $ float + 1.50), @size * (me.y $ float - 0.5), @r, @r, @colorArray[me.color $ int])
-		do draw@circle(@size * (me.x $ float + 1.27), @size * (me.y $ float - 0.6), @r * 0.35, @r * 0.40, 16#FFDDDDDD)
-		do draw@circle(@size * (me.x $ float + 1.27), @size * (me.y $ float - 0.6), @r * 0.20, @r * 0.20, 16#FF333333)
-		do draw@circle(@size * (me.x $ float + 1.73), @size * (me.y $ float - 0.6), @r * 0.35, @r * 0.40, 16#FFDDDDDD)
-		do draw@circle(@size * (me.x $ float + 1.73), @size * (me.y $ float - 0.6), @r * 0.20, @r * 0.20, 16#FF333333)
+		if(me.color <> %none)
+			do draw@tri(me.x1, me.y1, me.x2, me.y2, me.x3, me.y3, @colorArray[me.color $ int])
+		else
+			do draw@line(me.x1, me.y1, me.x2, me.y2, @colorArray[me.color $ int])
+			do draw@line(me.x2, me.y2, me.x3, me.y3, @colorArray[me.color $ int])
+			do draw@line(me.x3, me.y3, me.x1, me.y1, @colorArray[me.color $ int])
+		end if
+	end func
+	+func isInside(x: float, y: float): bool
+		ret crossProduct(me.x2 - me.x1, me.y2 - me.y1, x - me.x1, y - me.y1) < 0.0 &
+		| crossProduct(me.x3 - me.x2, me.y3 - me.y2, x - me.x2, y - me.y2) < 0.0 &
+		| crossProduct(me.x1 - me.x3, me.y1 - me.y3, x - me.x3, y - me.y3) < 0.0
+		func crossProduct(x1: float, y1: float, x2: float, y2: float): float
+			ret (x1 * y2 - y1 * x2)
+		end func
 	end func
 end class
 
@@ -274,7 +113,22 @@ enum Color
 	none
 	red
 	green
-	blue
-	yellow
-	colorNum
 end enum
+
+var nextColor: @Color
+
+func drawMainOnMouseUpL(wnd: wnd@Draw, xMouse: int, yMouse: int)
+	for i(0, 1)
+		for x(0, @width - 1)
+			for y(0, @height - 1)
+				if(@board[i][x][y] <>& null & @board[i][x][y].isInside(xMouse $ float, yMouse $ float))
+					if(@board[i][x][y].color = %none)
+						do @board[i][x][y].color :: @nextColor
+						do @nextColor :: @nextColor = %red ?(%green $ @Color, %red)
+					end if
+					break i
+				end if
+			end for
+		end for
+	end for
+end func
