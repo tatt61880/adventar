@@ -1,0 +1,31 @@
+var title: []char :: "Heptagon"
+var wndMain: wnd@Wnd 
+var drawMain: wnd@Draw
+const color: int :: 16#FFAA33AA
+const colorBackground: int :: 16#FFFFFFAA
+const width: int :: 320
+const height: int :: 320
+const n: int :: 7
+
+func main()
+	do @wndMain :: wnd@makeWnd(null, %fix, @width, @height, @title)
+	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @width, @height, %scale, %scale, false)
+	do draw@clearColor(@colorBackground)
+	var x: []float :: #[@n]float
+	var y: []float :: #[@n]float
+	const cx: float :: @width $ float / 2.0
+	const cy: float :: @height $ float / 2.0
+	const size: float :: 150.0
+	for i(0, @n - 1)
+		do x[i] :: cx + size * lib@cos((2.0 * lib@pi / @n $ float) * i $ float - lib@pi / 2.0)
+		do y[i] :: cy + size * lib@sin((2.0 * lib@pi / @n $ float) * i $ float - lib@pi / 2.0)
+	end for
+	while(wnd@act())
+		for i(0, @n - 1)
+			for j(0, @n - 1)
+				do draw@line(x[i], y[i], x[j], y[j], @color)
+			end for
+		end for
+		do draw@render(30)
+	end while
+end func

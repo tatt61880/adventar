@@ -40,7 +40,7 @@ func drawAll()
 			end for
 		end for
 	end for
-	do draw@render(60)
+	do draw@render(30)
 
 	func drawLines()
 	end func

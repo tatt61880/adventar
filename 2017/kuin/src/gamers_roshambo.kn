@@ -89,7 +89,7 @@ func game(): bool
 		do @fontSmall.draw(@width / 4.0 * 1.0 + 2.0, @selectAreaY, "2", fontColor)
 		do @fontSmall.draw(@width / 4.0 * 2.0 + 2.0, @selectAreaY, "3", fontColor)
 		do @fontSmall.draw(@width / 4.0 * 3.0 + 2.0, @selectAreaY, "4", fontColor)
-		do draw@render(60)
+		do draw@render(30)
 
 		func drawHand(x: float, y: float, hand: @Hand)
 			switch(hand)
