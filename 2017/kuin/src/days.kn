@@ -1,8 +1,8 @@
 const title: []char :: "生まれて何日目？"
 var wndMain: wnd@Wnd
-var yearEdit: wnd@Edit
-var monthEdit: wnd@Edit
-var dayEdit: wnd@Edit
+var yEdit: wnd@Edit
+var mEdit: wnd@Edit
+var dEdit: wnd@Edit
 var resultEdit: wnd@Edit
 var tabOrder: wnd@TabOrder
 const width: int :: 300
@@ -10,54 +10,53 @@ const height: int :: 100
 
 func main()
 	do @wndMain :: wnd@makeWnd(null, %fix, @width, @height, @title)
-
-	do wnd@makeLabel(@wndMain, 6, 18, 324, 12, %fix, %fix, "生年月日: 西暦")
+	do wnd@makeLabel(@wndMain,   6, 18, 324, 12, %fix, %fix, "生年月日: 西暦")
 	do wnd@makeLabel(@wndMain, 140, 18, 324, 12, %fix, %fix, "年")
 	do wnd@makeLabel(@wndMain, 185, 18, 324, 12, %fix, %fix, "月")
 	do wnd@makeLabel(@wndMain, 230, 18, 324, 12, %fix, %fix, "日")
-	do wnd@makeLabel(@wndMain, 6, 42, 324, 12, %fix, %fix, "※計算対象の西暦は1970年以降、3000年以内です。")
-	do wnd@makeLabel(@wndMain, 6, 70, 324, 12, %fix, %fix, "計算結果:")
+	do wnd@makeLabel(@wndMain,   6, 42, 324, 12, %fix, %fix, "※計算対象の西暦は1970年以降、3000年以内です。")
+	do wnd@makeLabel(@wndMain,   6, 70, 324, 12, %fix, %fix, "計算結果:")
+	do wnd@onKeyPress(@onKeyPress)
+	do @tabOrder :: wnd@makeTabOrder([@yEdit, @mEdit, @dEdit])
+	do @yEdit :: wnd@makeEdit(@wndMain,  90, 14, 45, 20, %scale, %scale)
+	do @mEdit :: wnd@makeEdit(@wndMain, 155, 14, 25, 20, %scale, %scale)
+	do @dEdit :: wnd@makeEdit(@wndMain, 200, 14, 25, 20, %scale, %scale)
+	do @yEdit.onChange :: @calc
+	do @mEdit.onChange :: @calc
+	do @dEdit.onChange :: @calc
+
 	do @resultEdit :: wnd@makeEdit(@wndMain, 60, 66, 230, 20, %scale, %scale)
 	do @resultEdit.readonly(true)
-	do @yearEdit :: wnd@makeEdit(@wndMain, 90, 14, 45, 20, %scale, %scale)
-	do @monthEdit :: wnd@makeEdit(@wndMain, 155, 14, 25, 20, %scale, %scale)
-	do @dayEdit :: wnd@makeEdit(@wndMain, 200, 14, 25, 20, %scale, %scale)
-	do @yearEdit.onChange :: @calc
-	do @monthEdit.onChange :: @calc
-	do @dayEdit.onChange :: @calc
-	var year: int
-	var month: int
-	var day: int
-	do lib@intToDate(lib@now(), &year, &month, &day, &, &, &)
-	do @yearEdit.setText("\{year}")
-	do @monthEdit.setText("\{month}")
-	do @dayEdit.setText("\{day}")
-
-	do @tabOrder :: wnd@makeTabOrder([@yearEdit $ wnd@WndBase, @monthEdit, @dayEdit])
-	do wnd@onKeyPress(@onKeyPress)
+	var y: int
+	var m: int
+	var d: int
+	do lib@intToDate(lib@now(), &y, &m, &d, &, &, &)
+	do @yEdit.setText("\{y}")
+	do @mEdit.setText("\{m}")
+	do @dEdit.setText("\{d}")
 	while(wnd@act())
 	end while
 end func
 
 func calc(wnd: wnd@Edit)
-	var birthYear: int
-	var birthMonth: int
-	var birthDay: int
-	do @yearEdit.getText().toInt(&birthYear)
-	do @monthEdit.getText().toInt(&birthMonth)
-	do @dayEdit.getText().toInt(&birthDay)
-	if(birthYear < 1970 | 3000 < birthYear | birthMonth <= 0 | 12 < birthMonth | birthDay <= 0 | 31 < birthDay)
+	var birthY: int
+	var birthM: int
+	var birthD: int
+	do @yEdit.getText().toInt(&birthY)
+	do @mEdit.getText().toInt(&birthM)
+	do @dEdit.getText().toInt(&birthD)
+	if(birthY < 1970 | 3000 < birthY | birthM <= 0 | 12 < birthM | birthD <= 0 | 31 < birthD)
 		do @resultEdit.setText("ERROR:対称範囲外の値が入力されています。")
 		ret
 	end if
-	var birthUnix: int :: lib@dateToInt(birthYear, birthMonth, birthDay, 0, 0, 0)
-	var year: int
-	var month: int
-	var day: int
-	do lib@intToDate(lib@now(), &year, &month, &day, &, &, &)
-	var todayUnix: int :: lib@dateToInt(year, month, day, 0, 0, 0)
+	var birthUnix: int :: lib@dateToInt(birthY, birthM, birthD, 0, 0, 0)
+	var y: int
+	var m: int
+	var d: int
+	do lib@intToDate(lib@now(), &y, &m, &d, &, &, &)
+	var todayUnix: int :: lib@dateToInt(y, m, d, 0, 0, 0)
 	var diffDays: int :: (todayUnix - birthUnix) / 86400
-	do @resultEdit.setText("誕生日からの経過日数: \{diffDays}日")
+	do @resultEdit.setText("生年月日からの経過日数: \{diffDays}日")
 end func
 
 func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
