@@ -74,7 +74,7 @@ func drawAll()
 		do draw@circle(x + @size - @r - @s, y + @r + @s, @r, @r, color)
 		do @font.draw(x + (3.0 - lib@log(10.0, num $ float) $ int $ float / 1.1) * @size / 8.0, y + @size / 4.0, "\{num}", fontColor)
 	end func
-	do draw@render(60)
+	do draw@render(30)
 end func
 
 func reset()
