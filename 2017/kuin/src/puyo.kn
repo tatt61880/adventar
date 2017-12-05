@@ -1,4 +1,4 @@
-var title: []char :: "ぷよぷよっぽい何か"
+var title: []char :: "ぷよぷよのような何か"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
 var inputEnable: bool
