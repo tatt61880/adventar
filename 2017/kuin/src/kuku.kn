@@ -1,0 +1,8 @@
+func main()
+	for y(1, 9)
+		for x(1, 9)
+			do cui@print("\{(x * y).toStrFmt("3d")}")
+		end for
+		do cui@print("\n")
+	end for
+end func
