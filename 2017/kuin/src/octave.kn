@@ -12,6 +12,7 @@ var vibratoChk: wnd@Chk
 var saveBtn: wnd@Btn
 var resetBtn: wnd@Btn
 const defaultInputStr: []char :: "19 18 19 18 19 14 17 15 12 12 12 3 7 12 14 14 14 7 11 14 15 15 15"
+;const defaultInputStr: []char :: "10 12 19 17 15 17 15 17 19 15 10 15 17 12 14 15 12 14 15 17 10 15 17 19"
 
 func main()
 	do @wndMain :: wnd@makeWnd(null, %aspect, @width, @height, @title)
