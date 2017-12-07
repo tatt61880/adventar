@@ -6,7 +6,7 @@ var inputEdit: wnd@Edit
 var tabOrder: wnd@TabOrder
 var saveBtn: wnd@Btn
 var resetBtn: wnd@Btn
-const defaultInputStr: []char :: "7 6 7 6 7 2 5 3 0 0 0 0 0 0 0 0"
+const defaultInputStr: []char :: "19 18 19 18 19 14 17 15 12 12 12 3 7 12 14 14 14 7 11 14 15 15 15"
 
 func main()
 	do @wndMain :: wnd@makeWnd(null, %aspect, @width, @height, @title)
@@ -26,40 +26,51 @@ func main()
 	end func
 
 	func save(wnd: wnd@WndBase)
-		var header: []bit8 :: [16#52b8, 16#49b8, 16#46b8, 16#46b8, 16#34b8, 16#B1b8, 16#02b8, 16#00b8, 16#57b8, 16#41b8, 16#56b8, 16#45b8, 16#66b8, 16#6Db8, 16#74b8, 16#20b8, 16#10b8, 16#00b8, 16#00b8, 16#00b8, 16#01b8, 16#00b8, 16#01b8, 16#00b8, 16#44b8, 16#ACb8, 16#00b8, 16#00b8, 16#44b8, 16#ACb8 , 16#00b8, 16#00b8, 16#01b8, 16#00b8, 16#08b8, 16#00b8, 16#64b8, 16#61b8, 16#74b8, 16#61b8, 16#10b8, 16#B1b8, 16#02b8, 16#00b8]
-		var bin: []bit8 :: ##header
+		var path: []char :: wnd@saveFileDialog(@wndMain, ["音声データ (*.wav)", "*.wav"], 0, "wav")
+		if(path =& null)
+			ret
+		end if
+		var filePtr: file@Writer :: file@makeWriter(path, false)
+		if(filePtr =& null)
+			do wnd@msgBox(@wndMain, "保存に失敗しました。\{path}", @title, %err, %ok)
+			ret
+		end if
+
 		var inputStr: []char :: @inputEdit.getText()
 		var splittedStrs: [][]char :: inputStr.split(" ")
+		var datasize: int :: ^splittedStrs * 44100
+		var filesize: int :: datasize + 44 {ヘッダが44bytes}
+		var header: []bit8 :: [
+		| 16#52b8, 16#49b8, 16#46b8, 16#46b8] {'RIFF'}
+		| ~ ((filesize - 8) $> []bit8).sub(0, 4) ~ {ファイルサイズ(byte) - 8(byte)}
+		| [
+		| 16#57b8, 16#41b8, 16#56b8, 16#45b8, {'WAVE'}
+		| 16#66b8, 16#6Db8, 16#74b8, 16#20b8, {'fmt '}
+		| 16#10b8, 16#00b8, 16#00b8, 16#00b8, {fmt チャンクのバイト数}
+		| 16#01b8, 16#00b8, {フォーマットID}
+		| 16#01b8, 16#00b8, {チャンネル数}
+		| 16#44b8, 16#ACb8, 16#00b8, 16#00b8, {サンプリングレート}
+		| 16#44b8, 16#ACb8, 16#00b8, 16#00b8, {データ速度}
+		| 16#01b8, 16#00b8, {ブロックサイズ}
+		| 16#08b8, 16#00b8, {サンプルあたりのビット数}
+		| 16#64b8, 16#61b8, 16#74b8, 16#61b8] {'data'}
+		| ~ ((datasize - 8) $> []bit8).sub(0, 4)  {データサイズ(byte)}
+		var bin: []bit8 :: ##header
 		var x: float :: 0.0
 		for i(0, ^splittedStrs - 1)
-			var key: int
-			do splittedStrs[i].toInt(&key)
+			var key: float
+			do splittedStrs[i].toFloat(&key)
 			for j(0, 44100 / 4)
 				var a: int :: (lib@sin(x) * 127.0 + 128.0) $ int
 				do bin :~ [a $ bit8]
-				do x :+ 441.0 * 2.0 ^ (key $ float / 12.0) * 2.0 * lib@pi / 44100.0
+				do x :+ 441.0 * 2.0 ^ (key / 12.0) * 2.0 * lib@pi / 44100.0
 			end for
 		end for
-		do saveWav(bin)
+		do filePtr.write(bin)
+		do filePtr.fin()
+		do wnd@msgBox(@wndMain, "保存しました。", @title, %none, %ok)
 	end func
 
 	func saveWav(bin: []bit8): bool
-		var file: []char :: wnd@saveFileDialog(@wndMain, ["音声データ (*.wav)", "*.wav"], 0, "wav")
-		if(file =& null)
-			ret false
-		end if
-		if(!saveBin(file, bin))
-			ret false
-		end if
-		func saveBin(path: []char, bin: []bit8): bool
-			var filePtr: file@Writer :: file@makeWriter(path, false)
-			if(filePtr =& null)
-				do wnd@msgBox(@wndMain, "保存に失敗しました。\{path}", @title, %err, %ok)
-				ret false
-			end if
-			do filePtr.write(bin)
-			do filePtr.fin()
-			ret true
-		end func
 	end func
 end func

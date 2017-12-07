@@ -1,7 +1,18 @@
+; n * nの掛け算の表を出力します。
 func main()
-	for y(1, 9)
-		for x(1, 9)
-			do cui@print("\{(x * y).toStrFmt("3d")}")
+	const n: int :: 19
+	var d: int :: lib@log(10.0, (n * n) $ float) $ int + 1
+	var fmt: []char :: "\{d + 1}d"
+	do cui@print(" ".repeat(d + 1) ~ "|")
+	for x(1, n)
+		do cui@print("\{x.toStrFmt(fmt)}")
+	end for
+	do cui@print("\n")
+	do cui@print("-".repeat((d + 1) * (n + 1) + 1) ~ "\n")
+	for y(1, n)
+		do cui@print("\{y.toStrFmt(fmt)}|")
+		for x(1, n)
+			do cui@print("\{(x * y).toStrFmt(fmt)}")
 		end for
 		do cui@print("\n")
 	end for
