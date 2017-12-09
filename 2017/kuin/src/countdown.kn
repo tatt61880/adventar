@@ -1,0 +1,36 @@
+var title: []char :: "Countdown"
+var wndMain: wnd@Wnd 
+var drawMain: wnd@Draw
+var font: draw@Font
+const fontColor: int :: 16#FFAA33AA
+const colorBackground: int :: 16#FFFFFFAA
+const width: int :: 320
+const height: int :: 320
+const n: int :: 10
+const fontSize: float :: 64.0
+
+func main()
+	do @wndMain :: wnd@makeWnd(null, %fix, @width, @height, @title)
+	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @width, @height, %scale, %scale, false)
+	do @font :: draw@makeFont(null, @fontSize $ int, true, false, false, @fontSize $ float)
+	do draw@clearColor(@colorBackground)
+	do wnd@msgBox(@wndMain, "カウントダウン開始！", @title, %none, %ok)
+	var fps: int :: 30
+	assert fps = 30 | fps = 60
+	var frame: int :: 0
+	var cx: float :: @width $ float / 2.0
+	var cy: float :: @height $ float / 2.0
+	var tex: draw@Tex :: draw@makeTexEvenColor(@fontColor)
+	while(wnd@act())
+		var countdownSec: int :: @n - frame / fps
+		do frame :+ 1
+		do @font.draw(cx - ((countdownSec > 0 ?(lib@log(10.0, countdownSec $ float) $ int $ float, 0.0)) + 1.0) * @fontSize / 2.0, cy - @fontSize, "\{countdownSec.toStrFmt("d")}", @fontColor)
+		do draw@render(fps)
+		if(countdownSec = 0)
+			if(wnd@msgBox(@wndMain, "カウントダウン終了！\nもう一度カウントダウンしますか？", @title, %none, %yesNo) = %no)
+				ret
+			end if
+			do frame :: 0
+		end if
+	end while
+end func
