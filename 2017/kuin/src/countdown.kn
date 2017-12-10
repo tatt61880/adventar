@@ -23,8 +23,9 @@ func main()
 	var tex: draw@Tex :: draw@makeTexEvenColor(@fontColor)
 	while(wnd@act())
 		var countdownSec: int :: @n - frame / fps
+		var countdownSecStr: []char :: "\{countdownSec.toStrFmt("d")}"
 		do frame :+ 1
-		do @font.draw(cx - ((countdownSec > 0 ?(lib@log(10.0, countdownSec $ float) $ int $ float, 0.0)) + 1.0) * @fontSize / 2.0, cy - @fontSize, "\{countdownSec.toStrFmt("d")}", @fontColor)
+		do @font.draw(cx - ((^countdownSecStr) $ float) * @fontSize / 2.0, cy - @fontSize, countdownSecStr, @fontColor)
 		do draw@render(fps)
 		if(countdownSec = 0)
 			if(wnd@msgBox(@wndMain, "カウントダウン終了！\nもう一度カウントダウンしますか？", @title, %none, %yesNo) = %no)

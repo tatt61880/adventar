@@ -1,7 +1,9 @@
 const title: []char :: "2048"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
-var font: draw@Font
+var font: []draw@Font
+var fontSizeW: []float
+var fontSizeH2: []float
 var pieces: [][]int
 var colors: []int
 var nextFlag: bool
@@ -20,7 +22,17 @@ func main()
 	assert @rndMin < 10
 	assert @rndMax < 10
 	assert @rndMin <= @rndMax
-	do @font :: draw@makeFont(null, (@size / 4.0) $ int, true, false, false, @size / 4.0 / 1.1)
+	do @font :: #[21]draw@Font
+	do @fontSizeW :: #[21]float
+	do @fontSizeH2 :: #[21]float
+	do @fontSizeW[1] :: @size / 1.5 / 1.1
+	do @fontSizeH2[1] :: @size / 2.0
+	do @font[1] :: draw@makeFont(null, @fontSizeH2[1] $ int, true, false, false, @fontSizeW[1])
+	for i(2, 20)
+		do @fontSizeW[i] :: @size / i $ float / 1.1
+		do @fontSizeH2[i] :: @size / i $ float
+		do @font[i] :: draw@makeFont(null, (@fontSizeH2[i]) $ int, true, false, false, @fontSizeW[i])
+	end for
 	do @wndMain :: wnd@makeWnd(null, %aspect, @size $ int * 4, @size $ int * 4, @title)
 	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @size $ int * 4, @size $ int * 4, %scale, %scale, false)
 	do @colors :: [0, 16#FFEEDDDD, 16#FFDDCCAA, 16#FFFFAAAA, 16#FFFF5555, 16#FFFF3333, 16#FFFF1111] ~ [16#FFCCCC44].repeat(20)
@@ -63,7 +75,6 @@ func drawAll()
 		end for
 	end for
 	func drawPiece(n: int, x: float, y: float)
-		var num: int :: 2 ^ n
 		var color: int :: @colors[n]
 		var fontColor: int :: color % 256 < 128 ?(16#FFEEEEEE, 16#FF111111)
 		do draw@rect(x + @s, y + @r + @s, @size - 2.0 * @s, @size - 2.0 * (@r + @s), color)
@@ -72,7 +83,8 @@ func drawAll()
 		do draw@circle(x + @r + @s, y + @size - @r - @s, @r, @r, color)
 		do draw@circle(x + @size - @r - @s, y + @size - @r - @s, @r, @r, color)
 		do draw@circle(x + @size - @r - @s, y + @r + @s, @r, @r, color)
-		do @font.draw(x + (3.0 - lib@log(10.0, num $ float) $ int $ float / 1.1) * @size / 8.0, y + @size / 4.0, "\{num}", fontColor)
+		var numStr: []char :: (2 ^ n).toStr()
+		do @font[^numStr].draw(x + 0.5 * (@size - @fontSizeW[^numStr] * (^numStr) $ float), y + 0.5 * @size - @fontSizeH2[^numStr], numStr, fontColor)
 	end func
 	do draw@render(30)
 end func
