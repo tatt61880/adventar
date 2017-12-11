@@ -1,5 +1,5 @@
 const title: []char :: "2048"
-var wndMain: wnd@Wnd 
+var wndMain: wnd@Wnd
 var drawMain: wnd@Draw
 var font: []draw@Font
 var fontSizeW: []float
