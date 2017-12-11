@@ -27,7 +27,7 @@ func main()
 	do @resetBtn :: wnd@makeBtn(@wndMain, @width - 55, 90, 50, 20, %move, %fix, "リセット")
 	do @resetBtn.onPush :: reset
 	do @saveBtn.onPush :: save
-	do @tabOrder :: wnd@makeTabOrder([@inputEdit $ wnd@WndBase, @saveBtn, @resetBtn])
+	do @tabOrder :: wnd@makeTabOrder([@inputEdit $ wnd@WndBase, @saveBtn $ wnd@WndBase, @resetBtn $ wnd@WndBase])
 	do wnd@onKeyPress(@onKeyPress)
 	do reset(null)
 	while(wnd@act())
