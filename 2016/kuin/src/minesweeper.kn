@@ -173,7 +173,7 @@ func open(row: int, col: int)
 		end if
 
 		do @numOpen :+ 1
-		do dbg@print("numOpen = \{@numOpen}")
+		do dbg@print("numOpen = \{@numOpen}\n")
 		if(@numOpen = @numNotMines)
 			do @gameCleared :: true
 		end if

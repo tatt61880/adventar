@@ -27,11 +27,11 @@ func main()
 	do @fontSizeH2 :: #[21]float
 	do @fontSizeW[1] :: @size / 1.5 / 1.1
 	do @fontSizeH2[1] :: @size / 2.0
-	do @font[1] :: draw@makeFont(null, @fontSizeH2[1] $ int, true, false, false, @fontSizeW[1])
+	do @font[1] :: draw@makeFont(null, @fontSizeH2[1] $ int, true, false, true, false, @fontSizeW[1])
 	for i(2, 20)
 		do @fontSizeW[i] :: @size / i $ float / 1.1
 		do @fontSizeH2[i] :: @size / i $ float
-		do @font[i] :: draw@makeFont(null, (@fontSizeH2[i]) $ int, true, false, false, @fontSizeW[i])
+		do @font[i] :: draw@makeFont(null, (@fontSizeH2[i]) $ int, true, false, true, false, @fontSizeW[i])
 	end for
 	do @wndMain :: wnd@makeWnd(null, %aspect, @size $ int * 4, @size $ int * 4, @title)
 	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @size $ int * 4, @size $ int * 4, %scale, %scale, false)
