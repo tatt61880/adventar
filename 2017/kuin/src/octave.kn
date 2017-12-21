@@ -1,5 +1,5 @@
 {※生成したwavファイルを再生する際は、音量にご注意ください。}
-var title: []char :: "Kuinで作る、はじめてのDAW制作"
+const title: []char :: "Kuinで作る、はじめてのDAW制作"
 var wndMain: wnd@Wnd 
 const width: int :: 400
 const height: int :: 120
