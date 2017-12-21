@@ -1,6 +1,7 @@
-{ AtCoder Beginner Contest 029 の D問題 「1」を解くKuinのコードです。 }
+; AtCoder Beginner Contest 029 の D問題 「1」を解くKuinのコードです。
 func main()
 	var N: int
+	do cui@print("数値を入力し、Enterを押してください。\n")
 	do cui@input().toInt(&N)
 
 	var ans: int :: 0
@@ -10,5 +11,5 @@ func main()
 			do ans :+ N % 10 ^ i + 1
 		end if
 	end for
-	do cui@print("\{ans}\n")
+	do cui@print("入力に対する答えは\{ans}です。\n")
 end func
