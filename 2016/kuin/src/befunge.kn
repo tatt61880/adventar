@@ -76,21 +76,21 @@ func befunge(src_: [][]char)
 	}
 	var p: Vec :: (#Vec).init(0, 0)
 	var d: Vec :: (#Vec).init(1, 0)
-	var st: CMyIntStack :: #CMyIntStack
-	class CMyIntStack() {スタックが空の時にpopされると0を返すようなスタックです。}
-		var st: stack<int>
+	var st: MyIntStack :: #MyIntStack
+	class MyIntStack() {スタックが空の時にpopされると0を返すようなスタックです。}
+		var s: stack<int>
 		*func ctor()
-			do me.st :: #stack<int>
+			do me.s :: #stack<int>
 		end func
 		+func pop(): int
-			if(^me.st = 0)
+			if(^me.s = 0)
 				ret 0 {スタックが空なので0を返します。}
 			else
-				ret me.st.get()
+				ret me.s.get()
 			end if
 		end func
 		+func push(v: int)
-			do me.st.add(v)
+			do me.s.add(v)
 		end func
 	end class
 

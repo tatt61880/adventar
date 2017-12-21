@@ -1,12 +1,15 @@
 { マインスイーパ }
+const title: []char :: "Mainsweeper"
+var wndMain: wnd@Wnd 
+var drawMain: wnd@Draw
 const size: float :: 30.0
 const width: int :: 10
 const height: int :: 6
 const wndW: int :: @size $ int * (@width + 2)
 const wndH: int :: @size $ int * (@height + 2)
-const Ratio: float :: 0.25
-const Mines: int :: ((@width * @height)$ float * @Ratio)$ int
-const numNotMines: int :: @width * @height - @Mines
+const ratio: float :: 0.25
+const mines: int :: ((@width * @height)$ float * @ratio)$ int
+const numNotMines: int :: @width * @height - @mines
 
 var font: draw@Font
 var squares: [][]@Square
@@ -29,27 +32,31 @@ enum State
 end enum
 
 func main()
-	do @font :: draw@makeFont("Meiryo", (@size / 1.8) $ int, false, false, true, 0.0)
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %fix, @wndW, @wndH, "Mainsweeper")
-	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @wndW, @wndH, %fix, %fix, false)
-	do drawMain.onMouseDownL :: drawMainOnMouseDownL
-	do drawMain.onMouseDownR :: drawMainOnMouseDownR
-	do drawMain.onMouseUpL :: drawMainOnMouseUpL
-	do drawMain.onMouseUpR :: drawMainOnMouseUpR
+	do @font :: draw@makeFont("Meiryo", (@size / 1.8) $ int, false, false, true, true, 0.0)
+	do @wndMain :: wnd@makeWnd(null, %fix, @wndW, @wndH, "Mainsweeper")
+	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @wndW, @wndH, %fix, %fix, false)
+	do @drawMain.onMouseDownL :: drawMainOnMouseDownL
+	do @drawMain.onMouseDownR :: drawMainOnMouseDownR
+	do @drawMain.onMouseUpL :: drawMainOnMouseUpL
+	do @drawMain.onMouseUpR :: drawMainOnMouseUpR
 
 	while restart(wnd@act())
 		do @gameovered :: false
 		do @gameCleared :: false
 		do @numOpen :: 0
 		do initSquares()
-		do setMines(@Mines)
+		do setMines(@mines)
 		do @clickFlagL :: false
 		do @clickFlagR :: false
 		while a(wnd@act())
 			do drawSquares()
 			do draw@render(30)
-			if(input@pad(0, %a) = 1)
-				skip restart
+			if(@gameovered | @gameCleared)
+				if(wnd@msgBox(@wndMain, (@gameovered ?("Game Over", "Congratulations!")) ~ "\nTry again?", @title, %question, %yesNo) = %yes)
+					skip restart
+				else
+					break restart
+				end if
 			end if
 		end while
 	end while
@@ -162,15 +169,13 @@ func open(row: int, col: int)
 		do @squares[row][col].state :: %clicked
 		if(@squares[row][col].mine = 1)
 			do @gameovered :: true
-			;do Dbg@Log("=== GAMEOVER ===")
 			ret
 		end if
 
 		do @numOpen :+ 1
-		;do Dbg@Log("numOpen = " ~ @numOpen.ToStr())
+		do dbg@print("numOpen = \{@numOpen}")
 		if(@numOpen = @numNotMines)
 			do @gameCleared :: true
-			;do Dbg@Log("☆ GAMECLEAR ☆")
 		end if
 
 		if(@squares[row][col].number = 0)
