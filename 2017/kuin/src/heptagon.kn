@@ -1,4 +1,4 @@
-var title: []char :: "Heptagon"
+const title: []char :: "Heptagon"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
 const color: int :: 16#FFAA33AA
