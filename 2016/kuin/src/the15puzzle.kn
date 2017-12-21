@@ -48,7 +48,7 @@ end func
 const pieceSize: int :: 100
 const shuffleNum: int :: 1000
 const piecePerFrame: int :: @pieceSize / 4
-const fontSize: int :: 50
+const fontSize: int :: 48
 const finishedFontSize: int :: 20
 
 enum Dir
@@ -70,7 +70,7 @@ class Piece()
 	+func init(id: int): @Piece
 		do me.id :: id
 		do me.num :: id + 1
-		do me.font :: draw@makeFont("Meiryo", @fontSize, false, false, true, true, 0.0)
+		do me.font :: draw@makeFont("Meiryo", @fontSize, false, false, true, false, @fontSize $ float)
 		do me.posId :: id
 		do me.pos :: (#Pos).init(me.posId)
 		do me.dir :: %stay
