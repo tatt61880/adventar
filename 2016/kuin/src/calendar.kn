@@ -24,7 +24,7 @@ func main()
 	const wndSizeH: int :: 240
 	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, wndSizeW, wndSizeH, "Calendar")
 	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeW, wndSizeH, %scale, %scale, false)
-	var font: draw@Font :: draw@makeFont("Meiryo", 20, false, false, false, 20.0)
+	var font: draw@Font :: draw@makeFont("Meiryo", 20, false, false, true, false, 20.0)
 	while(wnd@act())
 		do font.draw(10.0, 5.0, "\{year}/\{month}", 16#FFFFFFFF)
 		for i(h, d + h - 1)
