@@ -1,7 +1,7 @@
 { 15パズル }
 func main()
 	assert @pieceSize % @piecePerFrame = 0 {この条件が満たされている前提で駒の移動処理を行います}
-	var finishedFont: draw@Font :: draw@makeFont("Meiryo", @finishedFontSize, false, false, true, 0.0)
+	var finishedFont: draw@Font :: draw@makeFont("Meiryo", @finishedFontSize, false, false, true, true, 0.0)
 
 	{駒の初期化}
 	do @pieces :: #[16]@Piece
@@ -13,7 +13,7 @@ func main()
 
 	const wndSizeW: int :: @pieceSize * 4
 	const wndSizeH: int :: @pieceSize * 4 + @finishedFontSize * 2
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %fix, wndSizeW, wndSizeH, "The 15 puzzle")
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %normal, wndSizeW, wndSizeH, "The 15 puzzle")
 	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeW, wndSizeH, %fix, %fix, false)
 	while a(wnd@act())
 		do draw@render(30)
@@ -70,7 +70,7 @@ class Piece()
 	+func init(id: int): @Piece
 		do me.id :: id
 		do me.num :: id + 1
-		do me.font :: draw@makeFont("Meiryo", @fontSize, false, false, true, 0.0)
+		do me.font :: draw@makeFont("Meiryo", @fontSize, false, false, true, true, 0.0)
 		do me.posId :: id
 		do me.pos :: (#Pos).init(me.posId)
 		do me.dir :: %stay
