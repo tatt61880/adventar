@@ -1,49 +1,35 @@
-{ 素因数分解した結果をリストで返します。 }
-func primeFactorization(num: int): list<int>
-	do cui@print("\{num} = ")
-	var retVal: list<int> :: #list<int>
-	var i: int :: 2
-	while(i * i <= num)
-		while(num % i = 0)
-			do num :/ i
-			do retVal.add(i)
-		end while
-		do i :+ 1
-	end while
-	if(num > 1)
-		do retVal.add(num)
-	end if
-	do retVal.head()
-	ret retVal
+{ 数値を素因数分解した結果を出力します。 }
+func main()
+	do @primeFactorization(24) { 24 = 2^3*3 }
+	do @primeFactorization(7) { 7 = 7 }
+	do @primeFactorization(1024) { 1024 = 2^10 }
+	do @primeFactorization(1224) { 1224 = 2^3*3^2*17 }
+	do @primeFactorization(20171224) { 20171224 = 2^3*197*12799 }
+	do @primeFactorization(61880) { 61880 = 2^3*5*7*13*17 }
 end func
 
-{ 素因数分解した結果の配列を元に、素因数分解の結果を出力します。 }
-func printPF(factors: list<int>)
+func primeFactorization(num: int)
+	do cui@print("\{num} = ")
+	var factors: []int :: math@primeFactors(num)
 	var str: []char :: ""
-	while(!factors.term())
-		if(^str <> 0)
-			do str :~ "*"
-		end if
-		var num: int :: factors.get()
-		do str :~ num.toStr()
+	for i(0, ^factors - 1)
+		do str :~ (^str = 0) ?("", "*")
+		var n: int :: factors[i]
+		do str :~ n.toStr()
 		var count: int :: 1
-		do factors.next()
-		while(!factors.term() & factors.get() = num)
-			do count :+ 1
-			do factors.next()
+		do i :+ 1
+		while loop(i <> ^factors)
+			if(factors[i] = n)
+				do count :+ 1
+				do i :+ 1
+			else
+				do i :- 1
+				break loop
+			end if
 		end while
 		if(count <> 1)
 			do str :~ "^" ~ count.toStr()
 		end if
-	end while
+	end for
 	do cui@print(str ~ "\n")
-end func
-
-func main()
-	do @printPF(@primeFactorization(12)) { 2^2*3 }
-	do @printPF(@primeFactorization(7)) { 7 }
-	do @printPF(@primeFactorization(1024)) { 2^10 }
-	do @printPF(@primeFactorization(1224)) { 2^3*3^2*17 }
-	do @printPF(@primeFactorization(20171224)) { 2^3*197*12799 }
-	do @printPF(@primeFactorization(61880)) { 2^3*5*7*13*17 }
 end func
