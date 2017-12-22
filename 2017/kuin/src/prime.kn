@@ -1,0 +1,6 @@
+; 10000以下の素数を出力します。
+func main()
+	for n(1, 10000)
+		do cui@print(math@prime(n) ?("\{n}\n", ""))
+	end for
+end func
