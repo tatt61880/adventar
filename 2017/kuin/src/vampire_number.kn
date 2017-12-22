@@ -1,0 +1,84 @@
+var tens: []int
+
+func tally(x: int): int
+	var t: int :: 0
+	while(x <> 0)
+		do t :+ (1b64).shl((x % 10) * 6) $ int
+		do x :/ 10
+	end while
+	ret t
+end func
+ 
+func digits(x: int): int
+	var n: int :: 0
+	while(x <> 0)
+		do n :+ 1
+		do x :/ 10
+	end while
+	ret n
+end func
+
+func fangs(x: int, f: []int): int
+	var d: int :: @digits(x)
+	if(d % 2 = 1)
+		ret 0
+	end if
+	do d :/ 2
+ 
+	var lo: int :: lib@max(@tens[d-1], (x + @tens[d] - 2)/ (@tens[d] - 1))
+	var hi: int :: lib@min(x / lo, (x $ float ^ 0.5) $ int)
+
+	var t: int :: @tally(x)
+	var n: int :: 0
+	for a(lo, hi)
+		var b: int :: x / a
+		if (a * b = x & (a % 10 <> 0 | b % 10 <> 0) & t = @tally(a) + @tally(b))
+			do f[n] :: a
+			do n :+ 1
+		end if
+	end for
+	ret n
+end func
+
+func fangs_info(x: int, f: []int, cnt: int): []char
+	var str: []char :: x.toStr()
+	for i(0, cnt - 1)
+		do str :~ " = \{f[i]} x \{x / f[i]}"
+	end for
+	ret str
+end func
+ 
+func main()
+	const max_digit: int :: 19 {※20にすると、オーバーフローします}
+	do @tens :: #[max_digit]int
+	var f: []int :: #[16]int
+ 
+	do @tens[0] :: 1
+	for i(1, max_digit - 1)
+		do @tens[i] :: @tens[i - 1] * 10
+	end for
+ 
+	var x: int :: 0
+	for n(1, 30)
+		var fs: int 
+		while a(true)
+			do x :+ 1
+			do fs :: @fangs(x, f)
+			if(fs <> 0)
+				break a
+			end if
+		end while
+		do cui@print("\{n}: \{@fangs_info(x, f, fs)}\n")
+	end for
+ 
+	var tests: []int :: [13078260, 16758243290880, 61880]
+	for i(0, ^tests - 1)
+		var test: int :: tests[i]
+		var fs: int :: @fangs(test, f)
+		if(fs <> 0)
+			do cui@print("\{test}: \{@fangs_info(test, f, fs)}\n")
+		else
+			do cui@print("\{test} is not vampiric.\n")
+		end if
+	end for
+end func

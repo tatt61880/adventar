@@ -1,0 +1,64 @@
+{欧文モールス符号を扱います。}
+var abc: [][]char
+var digit: [][]char
+var decodeDict: dict<[]char, char>
+var encodeDict: dict<int, []char>
+
+func encode(str: []char): []char
+	if(^str = 0)
+		ret ""
+	end if
+	var res: []char :: ""
+	for i(0, ^str - 1)
+		do res :~ @encodeDict.get(str[i] $ int) ~ "   "
+	end for
+	ret res.sub(0, ^res - 3)
+end func
+
+func decode(str: []char): []char
+	var res: []char :: ""
+	var s: int :: 0
+	var cnt: int :: 0
+	var c: char
+	for e(0, ^str - 1)
+		if(str[e] = ' ')
+			do c :: @decodeDict.get(str.sub(s, e - s))
+			if(c = '\0')
+				do cnt :+ 1
+				if(cnt % 7 = 6) {7つ以上の空白を単語の区切りと見なします}
+					do res :~ " "
+				end if
+			else
+				do cnt :: 0
+				do res :~ [c]
+			end if
+			do s :: e + 1
+		end if
+	end for
+	do res :~ [@decodeDict.get(str.sub(s, ^str - s))]
+	ret res
+end func
+
+func main()
+	do @abc :: ["・－", "－・・・", "－・－・", "－・・", "・", "・・－・", "－－・", "・・・・", "・・", "・－－－", "－・－", "・－・・", "－－", "－・", "－－－", "・－－・", "－－・－", "・－・", "・・・", "－", "・・－", "・・・－", "・－－", "－・・－", "－・－－", "－－・・"]
+	do @digit :: ["－－－－－", "・－－－－", "・・－－－", "・・・－－", "・・・・－", "・・・・・", "－・・・・", "－－・・・", "－－－・・", "－－－－・"]
+	do @decodeDict :: #dict<[]char, char>
+	do @encodeDict :: #dict<int, []char>
+	for i(0, 25)
+		do @decodeDict.add(@abc[i], 'A'.offset(i))
+		do @encodeDict.add((i + 'A' $ int), @abc[i])
+		do @encodeDict.add((i + 'a' $ int), @abc[i])
+	end for
+	for i(0, 9)
+		do @decodeDict.add(@digit[i], '0'.offset(i))
+		do @encodeDict.add(i + '0' $ int, @digit[i])
+	end for
+	do @decodeDict.add(" ", ' ')
+	do @encodeDict.add(' ' $ int, " ")
+
+	do cui@print(@encode("2016") ~ "\n")
+	do cui@print(@decode("－・－  ・・－  ・・  －・") ~ "\n")
+	do cui@print(@decode("－   ・－   －   －   －・・・・  ・－－－－  －－－・・  －－－・・  －－－－－") ~ "\n")
+	do cui@print(@encode("CQ CQ CQ DE TATT TATT TATT PSE K") ~ "\n")
+	do cui@print(@decode("－   ・－   －   －       －・・   ・       －・－   ・・－   ・・   －・   ・－       －・－") ~ "\n")
+end func

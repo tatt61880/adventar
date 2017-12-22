@@ -1,0 +1,9 @@
+func main()
+	do jingisukan(1)
+	func jingisukan(n: int)
+		do cui@print("羊が\{n}匹\n")
+		if(n < 25)
+			do jingisukan(n + 1)
+		end if
+	end func
+end func

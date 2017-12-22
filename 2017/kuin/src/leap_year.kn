@@ -1,0 +1,15 @@
+const year: int :: 2017
+func main()
+	func printLeapOrNot(year: int)
+		func isLeap(year: int): bool
+			assert year >= 1583 {グレゴリオ暦の施行は1583年頃からです。1582年まではユリウス暦。}
+			ret ((year % 4 = 0) & (year % 100 <> 0)) | (year % 400 = 0)
+		end func
+		do cui@print("\{year}年は閏年\{isLeap(year) ?("です", "ではありません")}。\n")
+	end func
+
+	do printLeapOrNot(@year)
+	do printLeapOrNot(2016)
+	do printLeapOrNot(2000)
+	do printLeapOrNot(2100)
+end func

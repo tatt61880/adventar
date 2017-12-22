@@ -1,0 +1,38 @@
+func isJugglable(arr: []int): bool
+	if(^arr = 0)
+		ret false
+	end if
+	var checkArr: []int :: #[^arr]int
+	for i(0, ^arr - 1)
+		if(arr[i] < 0) { 負の数が入っているものは「ジャグリング不可」とする。 }
+			ret false
+		end if
+		var index: int :: (arr[i] + i) % ^arr
+		if(checkArr[index] = 0)
+			do checkArr[index] :: 1
+		else
+			ret false
+		end if
+	end for
+	ret true
+end func
+
+func main()
+	do test("97531")
+	do test("531")
+	do test("551")
+	do test("db97531")
+	do test("siteswap")
+	do test("siteawsp")
+	func test(str: []char)
+		var arr: []int :: #[0]int
+		for i(0, ^str - 1)
+			var num: int :: str[i] $ int - '0' $ int
+			if(num > 9)
+				do num :- 'a' $ int - '0' $ int - 10
+			end if
+			do arr :~ [num]
+		end for
+		do cui@print(str ~ (@isJugglable(arr) ?(" is ", " isn't ")) ~ "jugglable.\n")
+	end func
+end func

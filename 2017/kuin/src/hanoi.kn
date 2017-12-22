@@ -1,0 +1,11 @@
+func main()
+	do @hanoi(4, "Left", "Center", "Right")
+end func
+
+func hanoi(n: int, f: []char, t: []char, v: []char)
+	if(n > 0)
+		do @hanoi(n - 1, f, v, t)
+		do cui@print("Move " ~ f ~  " to " ~ t ~ ".\n")
+		do @hanoi(n - 1 , v, t, f)
+	end if
+end func

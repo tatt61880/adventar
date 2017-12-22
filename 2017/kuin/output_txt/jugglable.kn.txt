@@ -1,0 +1,6 @@
+﻿97531 is jugglable.
+531 is jugglable.
+551 isn't jugglable.
+db97531 is jugglable.
+siteswap isn't jugglable.
+siteawsp is jugglable.

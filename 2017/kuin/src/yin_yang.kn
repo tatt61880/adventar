@@ -1,0 +1,30 @@
+func main()
+	do @yinYang(16)
+	do @yinYang(12)
+end func
+
+func yinYang(r: int)
+	for y(-r, r + 1)
+		var str: []char :: ""
+		for x(-2 * r, 2 * r + 1)
+			if(  isInsideCircle(-r, r, x, y))
+				do str :~ "#"
+			elif(isInsideCircle( r, r, x, y))
+				do str :~ "."
+			elif(isInsideCircle(-r, r * 3, x, y))
+				do str :~ "."
+			elif(isInsideCircle( r, r * 3, x, y))
+				do str :~ "#"
+			elif(isInsideCircle( 0, r * 6, x, y))
+				do str :~ ["#."[x > 0 ?(0, 1)]]
+			else
+				do str :~ " "
+			end if
+		end for
+		do cui@print(str ~ "\n")
+	end for
+
+	func isInsideCircle(y_: int, r: int, x: int, y: int): bool
+		ret (r $ float / 3.0) ^ 2.0 >= x $ float ^ 2.0 + (2.0 * y $ float - y_ $ float) ^ 2.0
+	end func
+end func
