@@ -1,5 +1,6 @@
 { 素因数分解した結果をリストで返します。 }
 func primeFactorization(num: int): list<int>
+	do cui@print("\{num} = ")
 	var retVal: list<int> :: #list<int>
 	var i: int :: 2
 	while(i * i <= num)
@@ -12,7 +13,7 @@ func primeFactorization(num: int): list<int>
 	if(num > 1)
 		do retVal.add(num)
 	end if
-	do retVal.head() {FIXME 本来は不要なはず}
+	do retVal.head()
 	ret retVal
 end func
 
@@ -42,7 +43,7 @@ func main()
 	do @printPF(@primeFactorization(12)) { 2^2*3 }
 	do @printPF(@primeFactorization(7)) { 7 }
 	do @printPF(@primeFactorization(1024)) { 2^10 }
-	do @printPF(@primeFactorization(1113)) { 3*7*53 }
-	do @printPF(@primeFactorization(20161113)) { 3*7*960053 }
+	do @printPF(@primeFactorization(1224)) { 2^3*3^2*17 }
+	do @printPF(@primeFactorization(20171224)) { 2^3*197*12799 }
 	do @printPF(@primeFactorization(61880)) { 2^3*5*7*13*17 }
 end func
