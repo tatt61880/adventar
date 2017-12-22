@@ -1,0 +1,16 @@
+{Lyrics of the song 99 Bottles of Beer}
+func main()
+	do cui@print(@makeLyrics(99))
+end func
+
+func makeLyrics(n: int): []char
+	const otw: []char :: " on the wall"
+	const eol: []char :: ".\n"
+	ret @rest(n, true) ~ otw ~ ", " ~ @rest(n, false) ~ eol ~ ((0 < n)
+	| ?("Take one down and pass it around, " ~ @rest(n - 1, false) ~ otw ~ eol ~ @makeLyrics(n - 1)
+	| , "Go to the store and buy some more, " ~ @rest(99, false) ~ otw ~ eol))
+end func
+
+func rest(n: int, f: bool): []char
+	ret (n = 0 ?((f ?("No", "no")) ~ " more", n.toStr())) ~ " bottle" ~ (n = 1 ?("", "s")) ~ " of beer"
+end func
