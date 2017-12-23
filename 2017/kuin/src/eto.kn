@@ -1,5 +1,9 @@
 func main()
 	var year: int
 	do lib@intToDate(lib@now(), &year, &, &, &, &, &)
-	do cui@print("今年(\{year}年)の干支は\{["甲乙丙丁戊己庚辛壬癸"[(year + 6) % 10], "子丑寅卯辰巳午未申酉戌亥"[(year + 8) % 12]]}です。\n")
+	do cui@print("今年(\{year}年)の干支は\{eto(year)}です。\n")
+	do cui@print("来年(\{year + 1}年)の干支は\{eto(year + 1)}です。\n")
+	func eto(year: int): []char
+		ret ["甲乙丙丁戊己庚辛壬癸"[(year + 6) % 10], "子丑寅卯辰巳午未申酉戌亥"[(year + 8) % 12]]
+	end func
 end func
