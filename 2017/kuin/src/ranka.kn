@@ -1,21 +1,24 @@
-var title: []char :: "Ranka(ランカ)のような何か"
+const title: []char :: "Ranka(ランカ)のような何か"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
 var font: draw@Font
-const width: int :: 6
-const height: int :: 6
+const width: int :: 8
+const height: int :: @width
+const wndWidth: int :: (@width $ float * @size * 1.5) $ int
+const wndHeight: int :: (@height $ float * @size * 1.5) $ int
+const trim: int :: @width / 2
 const size: float :: 50.0
 var board: [][][]@Ranka
 var colorArray: []int
 const lineColor: int :: 16#FF333333
 
 func main()
-	do @wndMain :: wnd@makeWnd(null, %fix, (@width $ float * @size * 1.5) $ int, (@height $ float * @size * 1.5) $ int, @title)
-	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, (@width $ float * @size * 1.5) $ int, (@height $ float * @size * 1.5) $ int, %scale, %scale, false)
-	do @font :: draw@makeFont(null, (@size / 2.0) $ int, true, false, true, 0.0)
-	do wnd@msgBox(@wndMain, "イージー碁:Ranka(ランカ)というゲームを作ろうとしている途中です。\n相手のコマを先に5つ取った方が勝ちのゲームなのですが、取るところを実装していません！", @title, %none, %ok)
-	do @colorArray :: [16#FFCCCCCC, 16#FFFF0000, 16#FF00AA00]
-	do draw@clearColor(16#FFFFFFFF)
+	do @wndMain :: wnd@makeWnd(null, %fix, @wndWidth, @wndHeight, @title)
+	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @wndWidth, @wndHeight, %scale, %scale, false)
+	do @font :: draw@makeFont(null, (@size / 2.0) $ int, true, false, true, true, 0.0)
+	do wnd@msgBox(@wndMain, "イージー碁:Ranka(ランカ)というゲームを作ろうとしている途中です。\n相手のコマを先に5つ取った方が勝ちのゲームです！\n※禁止ルールや取得したコマ数のカウントは実装していません。", @title, %none, %ok)
+	do @colorArray :: [16#FFDDDDDD, 16#FFFF0000, 16#FF00AA00]
+	do draw@clearColor(16#FFAAAAAA)
 	do @drawMain.onMouseUpL :: @drawMainOnMouseUpL
 	while(@game())
 	end while
@@ -48,12 +51,12 @@ end func
 
 func reset()
 	do @board :: #[2, @width, @height]@Ranka
-	for inverted(0, 1)
+	for i(0, 1)
 		for x(0, @width - 1)
 			for y(0, @height - 1)
-				if(x + y + inverted >= 3 & x + y + inverted <= 8)
-					do @board[inverted][x][y] :: (#@Ranka).init(x $ float + y $ float * 0.5, y $ float * 3.0 ^ 0.5 / 2.0 + 2.0, inverted $ bool)
-					;do @board[inverted][x][y].color :: (inverted + 1) $ @Color
+				if(i + x + y >= @trim & i + x + y < @width * 2 - @trim)
+					do @board[i][x][y] :: (#@Ranka).init(x $ float + y $ float * 0.5, y $ float * 3.0 ^ 0.5 / 2.0 + 2.0, i $ bool)
+					;do @board[i][x][y].color :: (i + 1) $ @Color
 				end if
 			end for
 		end for
@@ -124,10 +127,64 @@ func drawMainOnMouseUpL(wnd: wnd@Draw, xMouse: int, yMouse: int)
 					if(@board[i][x][y].color = %none)
 						do @board[i][x][y].color :: @nextColor
 						do @nextColor :: @nextColor = %red ?(%green $ @Color, %red)
+						do check(1 - i, x + i, y, @nextColor)
+						do check(1 - i, x + i - 1, y, @nextColor)
+						do check(1 - i, x, y + 2 * i - 1, @nextColor)
 					end if
 					break i
 				end if
 			end for
 		end for
 	end for
+	func check(i: int, x: int, y: int, color: @Color)
+		if(!@inBoard(i, x, y) | @board[i][x][y].color <> color)
+			ret
+		end if
+		; コマが囲まれているかを調べます。
+		var flag: bool :: true
+		var st: stack<[]int> :: #stack<[]int>
+		do st.add([i, x, y])
+		do @board[i][x][y].f :: true
+		while(^st <> 0)
+			var tmp: []int :: st.get()
+			var ii: int :: tmp[0]
+			var xx: int :: tmp[1]
+			var yy: int :: tmp[2]
+			do checkSub(1 - ii, xx + ii, yy, color, &st, &flag)
+			do checkSub(1 - ii, xx + ii - 1, yy, color, &st, &flag)
+			do checkSub(1 - ii, xx, yy + 2 * ii - 1, color, &st, &flag)
+		end while
+		for ii(0, 1)
+			for xx(0, @width - 1)
+				for yy(0, @height - 1)
+					if(@board[ii][xx][yy] <>& null & @board[ii][xx][yy].f)
+						if(flag)
+							do @board[ii][xx][yy].color :: %none
+						end if
+						do @board[ii][xx][yy].f :: false
+					end if
+				end for
+			end for
+		end for
+
+		func checkSub(i: int, x: int, y: int, color: @Color, st: &stack<[]int>, flag: &bool)
+			if(@inBoard(i, x, y) & !@board[i][x][y].f)
+				if(@board[i][x][y].color = color)
+					do st.add([i, x, y])
+					do @board[i][x][y].f :: true
+				else
+					if(@board[i][x][y].color = %none)
+						do flag :: false
+					end if
+				end if
+			end if
+		end func
+	end func
+end func
+
+func inBoard(i: int, x: int, y: int): bool
+	if(i < 0 | 1 < i | x < 0 | @width <= x | y < 0 | @height <= y)
+		ret false
+	end if
+	ret i + x + y >= @trim & i + x + y < @width * 2 - @trim
 end func
