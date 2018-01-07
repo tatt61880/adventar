@@ -1,5 +1,5 @@
 { マインスイーパ }
-const title: []char :: "Mainsweeper"
+const title: []char :: "Minesweeper"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
 const size: float :: 30.0
@@ -7,7 +7,7 @@ const width: int :: 10
 const height: int :: 6
 const wndW: int :: @size $ int * (@width + 2)
 const wndH: int :: @size $ int * (@height + 2)
-const ratio: float :: 0.25
+const ratio: float :: 0.15
 const mines: int :: ((@width * @height)$ float * @ratio)$ int
 const numNotMines: int :: @width * @height - @mines
 
@@ -32,8 +32,8 @@ enum State
 end enum
 
 func main()
-	do @font :: draw@makeFont("Meiryo", (@size / 1.8) $ int, false, false, true, true, 0.0)
-	do @wndMain :: wnd@makeWnd(null, %fix, @wndW, @wndH, "Mainsweeper")
+	do @font :: draw@makeFont("Meiryo", (@size / 1.8) $ int, false, false, true, 0.0)
+	do @wndMain :: wnd@makeWnd(null, %fix, @wndW, @wndH, @title)
 	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @wndW, @wndH, %fix, %fix, false)
 	do @drawMain.onMouseDownL :: drawMainOnMouseDownL
 	do @drawMain.onMouseDownR :: drawMainOnMouseDownR

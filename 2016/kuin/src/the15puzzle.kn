@@ -1,7 +1,7 @@
 { 15パズル }
 func main()
 	assert @pieceSize % @piecePerFrame = 0 {この条件が満たされている前提で駒の移動処理を行います}
-	var finishedFont: draw@Font :: draw@makeFont("Meiryo", @finishedFontSize, false, false, true, true, 0.0)
+	var finishedFont: draw@Font :: draw@makeFont("Meiryo", @finishedFontSize, false, false, true, 0.0)
 
 	{駒の初期化}
 	do @pieces :: #[16]@Piece
@@ -70,7 +70,7 @@ class Piece()
 	+func init(id: int): @Piece
 		do me.id :: id
 		do me.num :: id + 1
-		do me.font :: draw@makeFont("Meiryo", @fontSize, false, false, true, false, @fontSize $ float)
+		do me.font :: draw@makeFont("Meiryo", @fontSize, false, false, false, @fontSize $ float)
 		do me.posId :: id
 		do me.pos :: (#Pos).init(me.posId)
 		do me.dir :: %stay

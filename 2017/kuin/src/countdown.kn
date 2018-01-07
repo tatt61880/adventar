@@ -12,7 +12,7 @@ const fontSize: float :: 64.0
 func main()
 	do @wndMain :: wnd@makeWnd(null, %fix, @width, @height, @title)
 	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @width, @height, %scale, %scale, false)
-	do @font :: draw@makeFont(null, @fontSize $ int, true, false, true, false, @fontSize $ float)
+	do @font :: draw@makeFont(null, @fontSize $ int, true, false, false, @fontSize $ float)
 	do draw@clearColor(@colorBackground)
 	do wnd@msgBox(@wndMain, "カウントダウン開始！", @title, %none, %ok)
 	const fps: int :: 30
