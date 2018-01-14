@@ -1,85 +1,93 @@
 {東京パラリンピック2020のエンブレムを拡張した図形を表示します。}
-const num: int :: 34 {12の時に通常のパラリンピックのエンブレムになります。}
-const scale: float :: 10.0
+const title: []char :: "Paralympic 2020"
+var num: int
 const centerX: float :: 240.0
 const centerY: float :: 240.0
-var rot_x: float
-var rot_y: float
+const wndSizeX: int :: (@centerX * 2.0) $ int
+const wndSizeY: int :: (@centerY * 2.0) $ int
+var rotX: float
+var rotY: float
+var r: []float
+var rects: []@Rect
+var wndMain: wnd@Wnd
+var drawMain: wnd@Draw
 
 func main()
-	const wndSizeX: int :: (@centerX * 2.0) $ int
-	const wndSizeY: int :: (@centerY * 2.0) $ int
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, wndSizeX, wndSizeY, "Paralympic 2020")
-	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeX, wndSizeY, %scale, %scale, false)
-	class Point()
-		+var x: float
-		+var y: float
-		+func init(x_: float, y_: float): Point
-			do me.x :: x_
-			do me.y :: y_
-			ret me
-		end func
-		+func getDistance(t_: Point): float
-			ret ((me.x - t_.x) ^ 2.0 + (me.y - t_.y) ^ 2.0) ^ 0.5
-		end func
-	end class
-	var points: []Point :: #[@num]Point
+	do @wndMain :: wnd@makeWnd(null, %aspect, @wndSizeX, @wndSizeY, @title)
+	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @wndSizeX, @wndSizeY, %scale, %scale, false)
+	do @num :: 34 {12の時に通常のパラリンピックのエンブレムになります。}
+	do @init()
+	do @drawMain.onPaint :: @onPaint
+	do wnd@onKeyPress(@onKeyPress)
+
+	while(wnd@act())
+	end while
+end func
+
+func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
+	switch(key)
+	case %up, %right
+		do @num :+ 2
+		do @init()
+		do @drawMain.paint()
+		ret true
+	case %down, %left
+		if(@num > 4)
+			do @num :- 2
+			do @init()
+			do @drawMain.paint()
+		end if
+		ret true
+	end switch
+	ret false
+end func
+
+func onPaint(wnd: wnd@WndBase, width: int, height: int)
+	do draw@clearColor(16#FFFFFFFF)
+	for j(0, @num / 2 - 2)
+		for i(0, @num - 1)
+			var index: int :: i * 2 + j % 2
+			var rot: float :: 2.0 * lib@pi * index $ float / (@num * 2) $ float
+			var cx: float :: @r[j] * lib@cos(rot) + @centerX
+			var cy: float :: @r[j] * lib@sin(rot) + @centerY
+			var inv : bool :: false
+			if(j + 1 < index & index < @num - j) {下側の回転すべき場所}
+				do inv :: true
+			elif(@num + j < index & index < 2 * @num - j) {上側の消えるべき場所}
+				skip i
+			end if
+			do @rects[j].draw(cx, cy, rot, inv)
+		end for
+	end for
+	do draw@render(0)
+end func
+
+func init()
+	var scale: float :: 350.0 / @num $ float
+	var points: []@Point :: #[@num]@Point
 	for i(0, @num - 1)
-		var x: float :: @scale * lib@cos(2.0 * lib@pi * i $ float / @num $ float)
-		var y: float :: @scale * lib@sin(2.0 * lib@pi * i $ float / @num $ float)
-		do points[i] :: (#Point).init(x, y)
+		var x: float :: scale * lib@cos(2.0 * lib@pi * i $ float / @num $ float)
+		var y: float :: scale * lib@sin(2.0 * lib@pi * i $ float / @num $ float)
+		do points[i] :: (#@Point).init(x, y)
 	end for
 	var l: []float :: #[@num / 2]float
 	for i(0, @num / 2 - 1)
 		do l[i] :: points[0].getDistance(points[1 + i])
 	end for
 
-	class Rect()
-		+var w: float
-		+var h: float
-		+func init(w: float, h: float): Rect
-			do me.w :: w
-			do me.h :: h
-			ret me
-		end func
-		+func draw(cx: float, cy: float, rot: float, inv: bool)
-			if(inv)
-				do cx :: 2.0 * @rot_x - cx
-				do cy :: 2.0 * @rot_y - cy
-			end if
-			do drawRotRect(cx, cy, me.w, me.h, rot, 16#FF6188FF)
-			func drawRotRect(cx: float, cy: float, w: float, h: float, rot: float, color: int)
-				do w :/ 2.0
-				do h :/ 2.0
-				var s: float :: lib@sin(rot)
-				var c: float :: lib@cos(rot)
-				var x1: float ::  w * c - h * s + cx
-				var y1: float ::  w * s + h * c + cy
-				var x2: float :: -w * c - h * s + cx
-				var y2: float :: -w * s + h * c + cy
-				var x3: float :: -w * c + h * s + cx
-				var y3: float :: -w * s - h * c + cy
-				var x4: float ::  w * c + h * s + cx
-				var y4: float ::  w * s - h * c + cy
-				do draw@tri(x1, y1, x2, y2, x3, y3, color)
-				do draw@tri(x3, y3, x4, y4, x1, y1, color)
-			end func
-		end func
-	end class
-
-	var rects: []Rect :: #[@num / 2 - 1]Rect
+	do @rects :: #[@num / 2 - 1]@Rect
 	for i(0, @num / 2 - 2)
 		{θ=0の位置でのw, h}
 		var w: float :: l[@num / 2 - 2 - i]
 		var h: float :: l[i]
-		do rects[i] :: (#Rect).init(w, h)
+		do @rects[i] :: (#@Rect).init(w, h)
 	end for
 
-	{r[i]は(i+1)周目の長方形の中心までの距離}
-	var r: []float :: #[@num / 2 - 1]float
-	do r[0] :: l[@num / 2 - 2]
+	{@r[i]は(i+1)周目の長方形の中心までの距離}
+	do @r :: #[@num / 2 - 1]float
+	do @r[0] :: l[@num / 2 - 2]
 	for i(1, @num / 2 - 2)
-		do r[i] :: ((r[i - 1] + rects[i - 1].w / 2.0) ^ 2.0 + (rects[i - 1].h / 2.0) ^ 2.0 - (rects[i].h / 2.0) ^ 2.0) ^ 0.5 + rects[i].w / 2.0
+		do @r[i] :: ((@r[i - 1] + @rects[i - 1].w / 2.0) ^ 2.0 + (@rects[i - 1].h / 2.0) ^ 2.0 - (@rects[i].h / 2.0) ^ 2.0) ^ 0.5 + @rects[i].w / 2.0
 	end for
 
 	{rr[i]は(i+1)周目の長方形の内側の頂点までの距離}
@@ -87,28 +95,54 @@ func main()
 	do rr :: #[@num / 2]float
 	do rr[0] :: l[@num / 2 - 1] / 2.0
 	for i(1, @num / 2 - 1)
-		do rr[i] :: (((rr[i - 1] ^ 2.0 - (rects[i - 1].h / 2.0) ^ 2.0) ^ 0.5 + rects[i - 1].w) ^ 2.0 + (rects[i - 1].h / 2.0) ^ 2.0) ^ 0.5
+		do rr[i] :: (((rr[i - 1] ^ 2.0 - (@rects[i - 1].h / 2.0) ^ 2.0) ^ 0.5 + @rects[i - 1].w) ^ 2.0 + (@rects[i - 1].h / 2.0) ^ 2.0) ^ 0.5
 	end for
-	do @rot_x :: @centerX
-	do @rot_y :: @centerY + ((rr[@num / 2 - 1] ^ 2.0 - (r[0] / 2.0) ^ 2.0) ^ 0.5 + rects[0].h / 2.0) / 2.0
-	
-	while(wnd@act())
-		do draw@clearColor(16#FFFFFFFF)
-		for j(0, @num / 2 - 2)
-			for i(0, @num - 1)
-				var index: int :: i * 2 + j % 2
-				var rot: float :: 2.0 * lib@pi * index $ float / (@num * 2) $ float
-				var cx: float :: r[j] * lib@cos(rot) + @centerX
-				var cy: float :: r[j] * lib@sin(rot) + @centerY
-				var inv : bool :: false
-				if(j + 1 < index & index < @num - j) {下側の回転すべき場所}
-					do inv :: true
-				elif(@num + j < index & index < 2 * @num - j) {上側の消えるべき場所}
-					skip i
-				end if
-				do rects[j].draw(cx, cy, rot, inv)
-			end for
-		end for
-		do draw@render(30)
-	end while
+	do @rotX :: @centerX
+	do @rotY :: @centerY + ((rr[@num / 2 - 1] ^ 2.0 - (@r[0] / 2.0) ^ 2.0) ^ 0.5 + @rects[0].h / 2.0) / 2.0
 end func
+
+class Rect()
+	+var w: float
+	+var h: float
+	+func init(w: float, h: float): @Rect
+		do me.w :: w
+		do me.h :: h
+		ret me
+	end func
+	+func draw(cx: float, cy: float, rot: float, inv: bool)
+		if(inv)
+			do cx :: 2.0 * @rotX - cx
+			do cy :: 2.0 * @rotY - cy
+		end if
+		do drawRotRect(cx, cy, me.w, me.h, rot, 16#FF6188FF)
+		func drawRotRect(cx: float, cy: float, w: float, h: float, rot: float, color: int)
+			do w :/ 2.0
+			do h :/ 2.0
+			var s: float :: lib@sin(rot)
+			var c: float :: lib@cos(rot)
+			var x1: float ::  w * c - h * s + cx
+			var y1: float ::  w * s + h * c + cy
+			var x2: float :: -w * c - h * s + cx
+			var y2: float :: -w * s + h * c + cy
+			var x3: float :: -w * c + h * s + cx
+			var y3: float :: -w * s - h * c + cy
+			var x4: float ::  w * c + h * s + cx
+			var y4: float ::  w * s - h * c + cy
+			do draw@tri(x1, y1, x2, y2, x3, y3, color)
+			do draw@tri(x3, y3, x4, y4, x1, y1, color)
+		end func
+	end func
+end class
+
+class Point()
+	+var x: float
+	+var y: float
+	+func init(x: float, y: float): @Point
+		do me.x :: x
+		do me.y :: y
+		ret me
+	end func
+	+func getDistance(t: @Point): float
+		ret ((me.x - t.x) ^ 2.0 + (me.y - t.y) ^ 2.0) ^ 0.5
+	end func
+end class
