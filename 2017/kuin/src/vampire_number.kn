@@ -1,3 +1,39 @@
+func main()
+	const maxDigit: int :: 19 {※20にすると、オーバーフローします}
+	assert maxDigit <= 19
+	do @tens :: #[maxDigit]int
+	var f: []int :: #[16]int
+ 
+	do @tens[0] :: 1
+	for i(1, maxDigit - 1)
+		do @tens[i] :: @tens[i - 1] * 10
+	end for
+ 
+	var x: int :: 0
+	for n(1, 30)
+		var fs: int 
+		while a(true)
+			do x :+ 1
+			do fs :: @fangs(x, f)
+			if(fs <> 0)
+				break a
+			end if
+		end while
+		do cui@print("\{n}: \{@fangsInfo(x, f, fs)}\n")
+	end for
+ 
+	var tests: []int :: [13078260, 16758243290880, 61880]
+	for i(0, ^tests - 1)
+		var test: int :: tests[i]
+		var fs: int :: @fangs(test, f)
+		if(fs <> 0)
+			do cui@print("\{test}: \{@fangsInfo(test, f, fs)}\n")
+		else
+			do cui@print("\{test} is not vampiric.\n")
+		end if
+	end for
+end func
+
 var tens: []int
 
 func tally(x: int): int
@@ -40,45 +76,10 @@ func fangs(x: int, f: []int): int
 	ret n
 end func
 
-func fangs_info(x: int, f: []int, cnt: int): []char
+func fangsInfo(x: int, f: []int, cnt: int): []char
 	var str: []char :: x.toStr()
 	for i(0, cnt - 1)
 		do str :~ " = \{f[i]} x \{x / f[i]}"
 	end for
 	ret str
-end func
- 
-func main()
-	const max_digit: int :: 19 {※20にすると、オーバーフローします}
-	do @tens :: #[max_digit]int
-	var f: []int :: #[16]int
- 
-	do @tens[0] :: 1
-	for i(1, max_digit - 1)
-		do @tens[i] :: @tens[i - 1] * 10
-	end for
- 
-	var x: int :: 0
-	for n(1, 30)
-		var fs: int 
-		while a(true)
-			do x :+ 1
-			do fs :: @fangs(x, f)
-			if(fs <> 0)
-				break a
-			end if
-		end while
-		do cui@print("\{n}: \{@fangs_info(x, f, fs)}\n")
-	end for
- 
-	var tests: []int :: [13078260, 16758243290880, 61880]
-	for i(0, ^tests - 1)
-		var test: int :: tests[i]
-		var fs: int :: @fangs(test, f)
-		if(fs <> 0)
-			do cui@print("\{test}: \{@fangs_info(test, f, fs)}\n")
-		else
-			do cui@print("\{test} is not vampiric.\n")
-		end if
-	end for
 end func

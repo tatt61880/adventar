@@ -15,7 +15,7 @@ const lineColor: int :: 16#FF333333
 func main()
 	do @wndMain :: wnd@makeWnd(null, %fix, @wndWidth, @wndHeight, @title)
 	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @wndWidth, @wndHeight, %scale, %scale, false)
-	do @font :: draw@makeFont(null, (@size / 2.0) $ int, true, false, true, true, 0.0)
+	do @font :: draw@makeFont(null, (@size / 2.0) $ int, true, false, true, 0.0)
 	do wnd@msgBox(@wndMain, "イージー碁:Ranka(ランカ)というゲームを作ろうとしている途中です。\n相手のコマを先に5つ取った方が勝ちのゲームです！\n※禁止ルールや取得したコマ数のカウントは実装していません。", @title, %none, %ok)
 	do @colorArray :: [16#FFDDDDDD, 16#FFFF0000, 16#FF00AA00]
 	do draw@clearColor(16#FFAAAAAA)
@@ -33,7 +33,6 @@ func game(): bool
 end func
 
 func drawAll()
-	do drawLines()
 	for i(0, 1)
 		for x(0, @width - 1)
 			for y(0, @height - 1)
@@ -44,9 +43,6 @@ func drawAll()
 		end for
 	end for
 	do draw@render(30)
-
-	func drawLines()
-	end func
 end func
 
 func reset()
