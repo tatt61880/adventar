@@ -1,58 +1,61 @@
+const title: []char :: "Julia set"
+const realMin: float :: -1.5
+const realMax: float :: 1.5
+const realDel: float :: (@realMax - @realMin) / @sizeX $ float
+const imagMin: float :: -1.2
+const imagMax: float :: 1.2
+const imagDel: float :: (@imagMax - @imagMin) / @sizeY $ float
+const calcNum: int :: 150
+
+const sizeX: int :: 400
+const sizeY: int :: (@sizeX $ float * (@imagMax - @imagMin) / (@realMax - @realMin)) $ int
+const margin: int :: 5
+const wndSizeX: int :: @sizeX + 2 * @margin
+const wndSizeY: int :: @sizeY + 2 * @margin
+
+var colors: [][]float
+
 func main()
-	const realMin: float :: -1.5
-	const realMax: float :: 1.5
-	const realDel: float :: (realMax - realMin) / sizeX $ float
-	const imagMin: float :: -1.2
-	const imagMax: float :: 1.2
-	const imagDel: float :: (imagMax - imagMin) / sizeY $ float
-	const calcNum: int :: 300
-
-	const sizeX: int :: 300
-	const sizeY: int :: (sizeX $ float * (imagMax - imagMin) / (realMax - realMin)) $ int
-	const margin: int :: 5
-	const wndSizeX: int :: sizeX + 2 * margin
-	const wndSizeY: int :: sizeY + 2 * margin
-
-	var zr: float
-	var zi: float
-	var znr: float
-	var zni: float
 	const cr: float :: -0.4
 	const ci: float :: 0.6
-	var num: int
-
-	var colors: [][]float :: #[sizeY, sizeX]float
-	for row(0, sizeY - 1)
-		for col(0, sizeX - 1)
-			do zr :: realMin + realDel * col $ float
-			do zi :: imagMin + imagDel * row $ float
-			for i(1, calcNum)
+	do @colors :: #[@sizeY, @sizeX]float
+	for row(0, @sizeY - 1)
+		for col(0, @sizeX - 1)
+			var zr: float :: @realMin + @realDel * col $ float
+			var zi: float :: @imagMin + @imagDel * row $ float
+			var num: int
+			for i(0, @calcNum)
 				do num :: i
-				do znr :: zr * zr - zi * zi + cr
+				var znr: float :: zr * zr - zi * zi + cr
 				if(znr > 4.0)
 					break i
 				end if
-				do zni :: 2.0 * zr * zi + ci
+				var zni: float :: 2.0 * zr * zi + ci
 				if(zni > 4.0)
 					break i
 				end if
 				do zr :: znr
 				do zi :: zni
 			end for
-			do colors[row][col] :: num $ float / calcNum $ float
+			do @colors[row][col] :: num $ float / @calcNum $ float
 		end for
 	end for
 
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, wndSizeX, wndSizeY, "Julia set")
-	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeX, wndSizeY, %scale, %scale, false)
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, @wndSizeX, @wndSizeY, @title)
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @wndSizeX, @wndSizeY, %scale, %scale, false)
+	do drawMain.onPaint :: onPaint
+
 	while(wnd@act())
-		do draw@rect(0.0, 0.0, wndSizeX $ float, wndSizeY $ float, 16#FF6188FF)
-		for row(0, sizeY - 1)
-			for col(0, sizeX - 1)
-				var c: int :: (colors[sizeY - 1 - row][col] * 255.0) $ int
-				do draw@rect((col + margin) $ float, (row + margin) $ float, 1.0, 1.0, 16#FF000000 + c * 16#10101)
+	end while
+
+	func onPaint(wnd: wnd@WndBase, width: int, height: int)
+		do draw@rect(0.0, 0.0, @wndSizeX $ float, @wndSizeY $ float, 16#FF6188FF)
+		for row(0, @sizeY - 1)
+			for col(0, @sizeX - 1)
+				var c: int :: (@colors[@sizeY - 1 - row][col] * 255.0) $ int
+				do draw@rect((col + @margin) $ float, (row + @margin) $ float, 1.0, 1.0, 16#FF000000 + c * 16#10101)
 			end for
 		end for
-		do draw@render(30)
-	end while
+		do draw@render(0)
+	end func
 end func
