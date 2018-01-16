@@ -1,8 +1,10 @@
 {※生成したwavファイルを再生する際は、音量にご注意ください。}
 const title: []char :: "Kuinで作る、はじめてのDAW制作"
 var wndMain: wnd@Wnd 
+var drawStatus: wnd@Draw
+const colorBackground: int :: 16#00F0F0F0
 const width: int :: 400
-const height: int :: 120
+const height: int :: 110
 var inputEdit: wnd@Edit
 var tabOrder: wnd@TabOrder
 var sinRadio: wnd@Radio
@@ -16,20 +18,24 @@ const defaultInputStr: []char :: "19 18 19 18 19 14 17 15 12 12 12 3 7 12 14 14 
 
 func main()
 	do @wndMain :: wnd@makeWnd(null, %aspect, @width, @height, @title)
+	do @drawStatus :: wnd@makeDraw(@wndMain, 0, 100, @width, 10, %scale, %scale, false)
 	do wnd@makeLabel(@wndMain, 5, 5, 290, 12, %fix, %fix, "音を数値で入力してください。スペース区切りです。")
-	do @inputEdit :: wnd@makeEdit(@wndMain, 5, 30, @width - 10, 20, %scale, %fix)
-	do @sinRadio :: wnd@makeRadio(@wndMain, 5, 60, 60, 20, %fix, %fix, "サイン波")
+	do @inputEdit :: wnd@makeEdit(@wndMain, 5, 25, @width - 10, 20, %scale, %fix)
+	do @sinRadio :: wnd@makeRadio(@wndMain, 5, 50, 60, 20, %fix, %fix, "サイン波")
 	do @sinRadio.setChk(true)
-	do @rectRadio :: wnd@makeRadio(@wndMain, 80, 60, 60, 20, %fix, %fix, "矩形波")
-	do @vibratoChk :: wnd@makeChk(@wndMain, 160, 60, 80, 20, %fix, %fix, "ビブラート")
-	do @chordsChk :: wnd@makeChk(@wndMain, 240, 60, 80, 20, %fix, %fix, "和音")
-	do @saveBtn :: wnd@makeBtn(@wndMain, 5, 90, 50, 20, %fix, %fix, "保存")
-	do @resetBtn :: wnd@makeBtn(@wndMain, @width - 55, 90, 50, 20, %move, %fix, "リセット")
+	do @rectRadio :: wnd@makeRadio(@wndMain, 80, 50, 60, 20, %fix, %fix, "矩形波")
+	do @vibratoChk :: wnd@makeChk(@wndMain, 160, 50, 80, 20, %fix, %fix, "ビブラート")
+	do @chordsChk :: wnd@makeChk(@wndMain, 240, 50, 80, 20, %fix, %fix, "和音")
+	do @saveBtn :: wnd@makeBtn(@wndMain, 5, 75, 50, 20, %fix, %fix, "保存")
+	do @resetBtn :: wnd@makeBtn(@wndMain, @width - 55, 75, 50, 20, %move, %fix, "リセット")
 	do @resetBtn.onPush :: reset
 	do @saveBtn.onPush :: save
 	do @tabOrder :: wnd@makeTabOrder([@inputEdit $ wnd@WndBase, @saveBtn $ wnd@WndBase, @resetBtn $ wnd@WndBase])
 	do wnd@onKeyPress(@onKeyPress)
 	do reset(null)
+	do draw@clearColor(@colorBackground)
+	do draw@render(0)
+
 	while(wnd@act())
 	end while
 
@@ -87,13 +93,14 @@ func main()
 				do theta2 :+ (441.0 + (@vibratoChk.getChk() ?(lib@sin(vib) * 10.0, 0.0))) * 2.0 ^ ((key + 7.0) / 12.0) * 2.0 * lib@pi / 44100.0
 				do vib :+ 5.0 * 2.0 * lib@pi / 44100.0
 			end for
+			do draw@rect(0.0, 0.0, (@width * (i + 1) / ^splittedStrs) $ float, 10.0, 16#FFFF0000)
+			do draw@render(0)
 		end for
 		do filePtr.write(bin)
 		do filePtr.fin()
 		do wnd@msgBox(@wndMain, "保存しました。", @title, %none, %ok)
-	end func
-
-	func saveWav(bin: []bit8): bool
+		do draw@clearColor(@colorBackground)
+		do draw@render(0)
 	end func
 end func
 
