@@ -13,9 +13,18 @@ const margin: int :: 5
 const wndSizeX: int :: @sizeX + 2 * @margin
 const wndSizeY: int :: @sizeY + 2 * @margin
 
+func main()
+	do @calc()
+	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, @wndSizeX, @wndSizeY, @title)
+	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @wndSizeX, @wndSizeY, %scale, %scale, false)
+	do drawMain.onPaint :: @onPaint
+	while(wnd@act())
+	end while
+end func
+
 var colors: [][]float
 
-func main()
+func calc()
 	const cr: float :: -0.4
 	const ci: float :: 0.6
 	do @colors :: #[@sizeY, @sizeX]float
@@ -40,22 +49,15 @@ func main()
 			do @colors[row][col] :: num $ float / @calcNum $ float
 		end for
 	end for
+end func
 
-	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, @wndSizeX, @wndSizeY, @title)
-	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @wndSizeX, @wndSizeY, %scale, %scale, false)
-	do drawMain.onPaint :: onPaint
-
-	while(wnd@act())
-	end while
-
-	func onPaint(wnd: wnd@WndBase, width: int, height: int)
-		do draw@rect(0.0, 0.0, @wndSizeX $ float, @wndSizeY $ float, 16#FF6188FF)
-		for row(0, @sizeY - 1)
-			for col(0, @sizeX - 1)
-				var c: int :: (@colors[@sizeY - 1 - row][col] * 255.0) $ int
-				do draw@rect((col + @margin) $ float, (row + @margin) $ float, 1.0, 1.0, 16#FF000000 + c * 16#10101)
-			end for
+func onPaint(wnd: wnd@WndBase, width: int, height: int)
+	do draw@rect(0.0, 0.0, @wndSizeX $ float, @wndSizeY $ float, 16#FF6188FF)
+	for row(0, @sizeY - 1)
+		for col(0, @sizeX - 1)
+			var c: int :: (@colors[@sizeY - 1 - row][col] * 255.0) $ int
+			do draw@rect((col + @margin) $ float, (row + @margin) $ float, 1.0, 1.0, 16#FF000000 + c * 16#10101)
 		end for
-		do draw@render(0)
-	end func
+	end for
+	do draw@render(0)
 end func
