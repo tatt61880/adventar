@@ -36,7 +36,7 @@ func main()
 	do @wndMain :: wnd@makeWnd(null, %aspect, @size $ int * 4, @size $ int * 4, @title)
 	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @size $ int * 4, @size $ int * 4, %scale, %scale, false)
 	do @colors :: [0, 0xFFEEDDDD, 0xFFDDCCAA, 0xFFFFAAAA, 0xFFFF5555, 0xFFFF3333, 0xFFFF1111] ~ [0xFFCCCC44].repeat(20)
-	do wnd@onKeyPress(@onKeyPress)
+	do wnd@setOnKeyPress(@onKeyPress)
 	do draw@clearColor(0xFF333333)
 	while(@game())
 	end while

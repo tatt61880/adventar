@@ -31,7 +31,7 @@ func main()
 	do @resetBtn.onPush :: reset
 	do @saveBtn.onPush :: save
 	do @tabOrder :: wnd@makeTabOrder([@inputEdit $ wnd@WndBase, @saveBtn $ wnd@WndBase, @resetBtn $ wnd@WndBase])
-	do wnd@onKeyPress(@onKeyPress)
+	do wnd@setOnKeyPress(@onKeyPress)
 	do reset(null)
 	do draw@clearColor(@colorBackground)
 	do draw@render(0)

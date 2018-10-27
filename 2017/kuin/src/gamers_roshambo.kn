@@ -44,7 +44,7 @@ func main()
 	do @drawMain.onMouseUpL :: @drawMainOnMouseUpL
 	do draw@clearColor(@backgroundColor)
 	do wnd@msgBox(@wndMain, "ゲーマーじゃんけんの勝敗判定を素早く行えるように訓練するゲームです。\nゲーマーじゃんけんは少数派の手が勝ちのルールです。\n少数派の手が複数ある場合はその中でじゃんけんの強い方が勝ちです。\n\{@peopleMax}人以下でゲーマーじゃんけんが行われます。勝敗判定を行ってください。", @title, %none, %ok)
-	do wnd@onKeyPress(@onKeyPress)
+	do wnd@setOnKeyPress(@onKeyPress)
 	while(@game())
 	end while
 end func
