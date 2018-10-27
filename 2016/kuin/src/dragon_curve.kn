@@ -60,10 +60,10 @@ func drawDragon(leng: int, depth: int)
 			var pixSize: float :: @ww $ float / @w $ float
 			for i(0, @h * @w - 1)
 				do draw@rect(pixSize * (i % @w) $ float, pixSize * (i / @w) $ float, pixSize, pixSize,
-				| @buf[i].r $bit8 $int * 16#10000
-				| +@buf[i].g $bit8 $int * 16#100
+				| @buf[i].r $bit8 $int * 0x10000
+				| +@buf[i].g $bit8 $int * 0x100
 				| +@buf[i].b $bit8 $int
-				| +16#FF000000)
+				| +0xFF000000)
 			end for
 			do draw@render(0)
 		end func

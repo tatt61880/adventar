@@ -19,7 +19,7 @@ func main()
 		do draw@render(30)
 		do drawPieces()
 		if(@completeCheck())
-			do finishedFont.draw(10.0, @pieceSize $ float * 4.0, "Congratulations!", 16#FFFFFFFF)
+			do finishedFont.draw(10.0, @pieceSize $ float * 4.0, "Congratulations!", 0xFFFFFFFF)
 		end if
 		for i(0, ^@pieces - 1) {移動アニメーション用のループです}
 			var p: @Piece :: @pieces[i]
@@ -97,8 +97,8 @@ class Piece()
 	end func
 
 	+func draw()
-		do draw@rect(me.pos.x $ float + 2.0, me.pos.y $ float + 2.0, @pieceSize $ float - 4.0, @pieceSize $ float - 4.0, 16#FF0000FF)
-		do me.font.draw(me.pos.x $ float + (@pieceSize $ float - (^me.num.toStr() * @fontSize) $ float) / 2.0, me.pos.y $ float, me.num.toStr(), 16#FFFFFFFF)
+		do draw@rect(me.pos.x $ float + 2.0, me.pos.y $ float + 2.0, @pieceSize $ float - 4.0, @pieceSize $ float - 4.0, 0xFF0000FF)
+		do me.font.draw(me.pos.x $ float + (@pieceSize $ float - (^me.num.toStr() * @fontSize) $ float) / 2.0, me.pos.y $ float, me.num.toStr(), 0xFFFFFFFF)
 	end func
 
 	class Pos()

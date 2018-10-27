@@ -28,7 +28,7 @@ func main()
 	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeW, wndSizeH, %scale, %scale, false)
 	while(wnd@act())
 		do cnt :+ 1
-		do draw@rect(0.0, 0.0, px * W $ float, px * H $ float, 16#FF6060C0)
+		do draw@rect(0.0, 0.0, px * W $ float, px * H $ float, 0xFF6060C0)
 		switch(lib@rnd(0, 3))
 		case 0
 			do x :: (x + 1) % W
@@ -47,7 +47,7 @@ func main()
 		for i(1, ^posQueue)
 			var v: int :: (max - ^posQueue + i) * 255 / max
 			var p: Pos :: posQueue.get()
-			do draw@rect(p.x $ float * px, p.y $ float * px, px, px, 16#FF000000 + v * 16#10100)
+			do draw@rect(p.x $ float * px, p.y $ float * px, px, px, 0xFF000000 + v * 0x10100)
 			do posQueue.add(p)
 		end for
 		do draw@render(60)

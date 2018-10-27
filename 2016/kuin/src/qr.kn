@@ -32,16 +32,16 @@ func main()
 	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSize, wndSize, %scale, %scale, false)
 
 	while(wnd@act())
-		do draw@rect(0.0, 0.0, wndSize $ float, wndSize $ float, 16#FF6188FF)
+		do draw@rect(0.0, 0.0, wndSize $ float, wndSize $ float, 0xFF6188FF)
 		do qrEncode.draw(margin $ float, margin $float, size $ float, false)
 		do draw@render(30)
 	end while
 end func
 
-const x00: bit8 :: 16#00b8 {'\x00'}
-const x11: bit8 :: 16#11b8 {'\x11'}
-const x20: bit8 :: 16#20b8 {'\x20'}
-const x30: bit8 :: 16#30b8 {'\x30'}
+const x00: bit8 :: 0x00b8 {'\x00'}
+const x11: bit8 :: 0x11b8 {'\x11'}
+const x20: bit8 :: 0x20b8 {'\x20'}
+const x30: bit8 :: 0x30b8 {'\x30'}
 
 {誤り訂正レベル}
 const QR_LEVEL_L: int :: 0
@@ -348,7 +348,7 @@ class QrEncode()
 		end if
 
 		{パディングコード"11101100, 00010001"付加}
-		const x_ec : bit8 :: 16#ECb8
+		const x_ec : bit8 :: 0xECb8
 		var byPaddingCode: bit8 :: x_ec
 
 		for i((me.m_ncDataCodeWordBit + 7) / 8, ncDataCodeWord - 1)
@@ -868,8 +868,8 @@ class QrEncode()
 	備  考：EBBFh 以降の S-JIS は対象外
 	}
 	func IsKanjiData(c1: bit8, c2: bit8): bool
-		if(   ((c1 >= 16#81b8 & c1 <= 16#9Fb8) | (c1 >= 16#E0b8 & c1 <= 16#EBb8)) & (c2 >= 16#40b8))
-			if((c1  = 16#9Fb8 & c2 >  16#FCb8) | (c1  = 16#EBb8 & c2 >  16#BFb8))
+		if(   ((c1 >= 0x81b8 & c1 <= 0x9Fb8) | (c1 >= 0xE0b8 & c1 <= 0xEBb8)) & (c2 >= 0x40b8))
+			if((c1  = 0x9Fb8 & c2 >  0xFCb8) | (c1  = 0xEBb8 & c2 >  0xBFb8))
 				ret false
 			end if
 			ret true
@@ -916,12 +916,12 @@ class QrEncode()
 	}
 	func KanjiToBinaly(wc: bit16): bit16
 		switch(wc)
-		case 16#8140b16 to 16#9FFCb16
-			do wc :: (wc $ int - 16#8140) $ bit16
-		default {case 16#e040 to 16#ebbf}
-			do wc :: (wc $ int - 16#C140) $ bit16
+		case 0x8140b16 to 0x9FFCb16
+			do wc :: (wc $ int - 0x8140) $ bit16
+		default {case 0xe040 to 0xebbf}
+			do wc :: (wc $ int - 0xC140) $ bit16
 		end switch
-		ret wc.shr(8) * 16#C0b16 + wc.and(16#00FFb16)
+		ret wc.shr(8) * 0xC0b16 + wc.and(0x00FFb16)
 	end func
 
 	{
@@ -1057,13 +1057,13 @@ class QrEncode()
 	引  数：配置左上座標
 	}
 	func SetFinderPattern(x: int, y: int)
-		var byPattern: []bit8 :: [16#7Fb8, {1111111b}
-		|                         16#41b8, {1000001b}
-		|                         16#5Db8, {1011101b}
-		|                         16#5Db8, {1011101b}
-		|                         16#5Db8, {1011101b}
-		|                         16#41b8, {1000001b}
-		|                         16#7Fb8] {1111111b}
+		var byPattern: []bit8 :: [0x7Fb8, {1111111b}
+		|                         0x41b8, {1000001b}
+		|                         0x5Db8, {1011101b}
+		|                         0x5Db8, {1011101b}
+		|                         0x5Db8, {1011101b}
+		|                         0x41b8, {1000001b}
+		|                         0x7Fb8] {1111111b}
 		for i(0, 6)
 			for j(0, 6)
 				do me.m_byModuleData[x + j][y + i] :: (byPattern[i].and((1b8).shl(6 - j)) <> @x00) ?(@x30, @x20)
@@ -1076,11 +1076,11 @@ class QrEncode()
 	引  数：配置中央座標
 	}
 	func SetAlignmentPattern(x: int, y: int)
-		var byPattern: []bit8 :: [16#1Fb8, {11111b}
-		|                         16#11b8, {10001b}
-		|                         16#15b8, {10101b}
-		|                         16#11b8, {10001b}
-		|                         16#1Fb8] {11111b}
+		var byPattern: []bit8 :: [0x1Fb8, {11111b}
+		|                         0x11b8, {10001b}
+		|                         0x15b8, {10101b}
+		|                         0x11b8, {10001b}
+		|                         0x1Fb8] {11111b}
 		if(me.m_byModuleData[x][y].and(@x20) <> @x00)
 			ret {機能モジュールと重複するため除外}
 		end if
@@ -1110,7 +1110,7 @@ class QrEncode()
 		{剰余ビット算出}
 		for i(0, 5)
 			if(nVerData.and((1b64).shl(17 - i)) <> 0b64)
-				do nVerData :: nVerData.xor((16#1F25b64).shl(5 - i))
+				do nVerData :: nVerData.xor((0x1F25b64).shl(5 - i))
 			end if
 		end for
 
@@ -1136,7 +1136,7 @@ class QrEncode()
 
 		for i(0, me.m_ncAllCodeWord - 1)
 			for j(0, 7)
-				while(me.m_byModuleData[x][y].and(16#20b8) <> @x00, skip) {機能モジュールを除外}
+				while(me.m_byModuleData[x][y].and(0x20b8) <> @x00, skip) {機能モジュールを除外}
 					do x :+ nCoef_x
 					do nCoef_x :* -1
 					if(nCoef_x < 0)
@@ -1152,7 +1152,7 @@ class QrEncode()
 					end if
 				end while
 
-				do me.m_byModuleData[x][y] :: (me.m_byAllCodeWord[i].and((1b8).shl(7 - j)) <> @x00) ?(16#02b8, 16#00b8)
+				do me.m_byModuleData[x][y] :: (me.m_byAllCodeWord[i].and((1b8).shl(7 - j)) <> @x00) ?(0x02b8, 0x00b8)
 			end for
 		end for
 	end func
@@ -1184,7 +1184,7 @@ class QrEncode()
 					default {case 7}
 						do bMask :: ((((i * j) % 3) + ((i + j) % 2)) % 2 = 0)
 					end switch
-					do me.m_byModuleData[j][i] :: me.m_byModuleData[j][i].and(16#FEb8).or(((me.m_byModuleData[j][i].and(16#02b8) $ int > 1) $ bit8).xor(bMask $ bit8))
+					do me.m_byModuleData[j][i] :: me.m_byModuleData[j][i].and(0xFEb8).or(((me.m_byModuleData[j][i].and(0x02b8) $ int > 1) $ bit8).xor(bMask $ bit8))
 				end if
 			end for
 		end for
@@ -1199,13 +1199,13 @@ class QrEncode()
 
 		switch(me.m_nLevel)
 		case @QR_LEVEL_M
-			do nFormatInfo :: 16#00 {00nnnb}
+			do nFormatInfo :: 0x00 {00nnnb}
 		case @QR_LEVEL_L
-			do nFormatInfo :: 16#08 {01nnnb}
+			do nFormatInfo :: 0x08 {01nnnb}
 		case @QR_LEVEL_Q
-			do nFormatInfo :: 16#18 {11nnnb}
+			do nFormatInfo :: 0x18 {11nnnb}
 		default {case @QR_LEVEL_H}
-			do nFormatInfo :: 16#10 {10nnnb}
+			do nFormatInfo :: 0x10 {10nnnb}
 		end switch
 
 		do nFormatInfo :+ nPatternNo
@@ -1215,14 +1215,14 @@ class QrEncode()
 		{剰余ビット算出}
 		for i(0, 4)
 			if(nFormatData.and((1b64).shl(14 - i)) <> 0b64)
-				do nFormatData :: nFormatData.xor((16#0537b64).shl(4 - i)) {10100110111b}
+				do nFormatData :: nFormatData.xor((0x0537b64).shl(4 - i)) {10100110111b}
 			end if
 		end for
 
 		do nFormatData :+ (nFormatInfo $ bit64).shl(10)
 
 		{マスキング}
-		do nFormatData :: nFormatData.xor(16#5412b64) {101010000010010b}
+		do nFormatData :: nFormatData.xor(0x5412b64) {101010000010010b}
 
 		{左上位置検出パターン周り配置}
 		for i(0, 5)
@@ -1398,13 +1398,13 @@ class QrEncode()
 		else
 			do cellSize :: size / (me.m_nSymbleSize + 2 * @QR_MARGIN) $ float
 		end if
-		do draw@rect(x0, y0, (me.m_nSymbleSize + 2 * @QR_MARGIN) $ float * cellSize, (me.m_nSymbleSize + 2 * @QR_MARGIN) $ float * cellSize, 16#FFFFFFFF)
+		do draw@rect(x0, y0, (me.m_nSymbleSize + 2 * @QR_MARGIN) $ float * cellSize, (me.m_nSymbleSize + 2 * @QR_MARGIN) $ float * cellSize, 0xFFFFFFFF)
 		for x(0, me.m_nSymbleSize - 1)
 			for y(0, me.m_nSymbleSize - 1)
 				if(me.m_byModuleData[x][y] <> @x00)
-					do draw@rect(x0 + (x + @QR_MARGIN) $ float * cellSize, y0 + (y + @QR_MARGIN) $ float * cellSize, cellSize, cellSize, 16#FF000000)
+					do draw@rect(x0 + (x + @QR_MARGIN) $ float * cellSize, y0 + (y + @QR_MARGIN) $ float * cellSize, cellSize, cellSize, 0xFF000000)
 				else
-					do draw@rect(x0 + (x + @QR_MARGIN) $ float * cellSize, y0 + (y + @QR_MARGIN) $ float * cellSize, cellSize, cellSize, 16#FFFFFFFF)
+					do draw@rect(x0 + (x + @QR_MARGIN) $ float * cellSize, y0 + (y + @QR_MARGIN) $ float * cellSize, cellSize, cellSize, 0xFFFFFFFF)
 				end if
 			end for
 		end for

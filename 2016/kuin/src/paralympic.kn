@@ -43,7 +43,7 @@ func onKeyPress(key: wnd@Key, shiftCtrl: wnd@ShiftCtrl): bool
 end func
 
 func onPaint(wnd: wnd@WndBase, width: int, height: int)
-	do draw@clearColor(16#FFFFFFFF)
+	do draw@clearColor(0xFFFFFFFF)
 	for j(0, @num / 2 - 2)
 		for i(0, @num - 1)
 			var index: int :: i * 2 + j % 2
@@ -114,7 +114,7 @@ class Rect()
 			do cx :: 2.0 * @rotX - cx
 			do cy :: 2.0 * @rotY - cy
 		end if
-		do drawRotRect(cx, cy, me.w, me.h, rot, 16#FF6188FF)
+		do drawRotRect(cx, cy, me.w, me.h, rot, 0xFF6188FF)
 		func drawRotRect(cx: float, cy: float, w: float, h: float, rot: float, color: int)
 			do w :/ 2.0
 			do h :/ 2.0

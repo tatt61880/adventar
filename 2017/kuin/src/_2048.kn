@@ -35,9 +35,9 @@ func main()
 	end for
 	do @wndMain :: wnd@makeWnd(null, %aspect, @size $ int * 4, @size $ int * 4, @title)
 	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @size $ int * 4, @size $ int * 4, %scale, %scale, false)
-	do @colors :: [0, 16#FFEEDDDD, 16#FFDDCCAA, 16#FFFFAAAA, 16#FFFF5555, 16#FFFF3333, 16#FFFF1111] ~ [16#FFCCCC44].repeat(20)
+	do @colors :: [0, 0xFFEEDDDD, 0xFFDDCCAA, 0xFFFFAAAA, 0xFFFF5555, 0xFFFF3333, 0xFFFF1111] ~ [0xFFCCCC44].repeat(20)
 	do wnd@onKeyPress(@onKeyPress)
-	do draw@clearColor(16#FF333333)
+	do draw@clearColor(0xFF333333)
 	while(@game())
 	end while
 end func
@@ -76,7 +76,7 @@ func drawAll()
 	end for
 	func drawPiece(n: int, x: float, y: float)
 		var color: int :: @colors[n]
-		var fontColor: int :: color % 256 < 128 ?(16#FFEEEEEE, 16#FF111111)
+		var fontColor: int :: color % 256 < 128 ?(0xFFEEEEEE, 0xFF111111)
 		do draw@rect(x + @s, y + @r + @s, @size - 2.0 * @s, @size - 2.0 * (@r + @s), color)
 		do draw@rect(x + @s + @r, y + @s, @size - 2.0 * (@r + @s), @size - 2.0 * @s, color)
 		do draw@circle(x + @r + @s, y + @r + @s, @r, @r, color)

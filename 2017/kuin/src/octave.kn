@@ -2,7 +2,7 @@
 const title: []char :: "Kuinで作る、はじめてのDAW制作"
 var wndMain: wnd@Wnd 
 var drawStatus: wnd@Draw
-const colorBackground: int :: 16#00F0F0F0
+const colorBackground: int :: 0x00F0F0F0
 const width: int :: 400
 const height: int :: 110
 var inputEdit: wnd@Edit
@@ -59,19 +59,19 @@ func main()
 		var datasize: int :: ^splittedStrs * 44100
 		var filesize: int :: datasize + 44 {ヘッダが44bytes}
 		var header: []bit8 :: [
-		| 16#52b8, 16#49b8, 16#46b8, 16#46b8] {'RIFF'}
+		| 0x52b8, 0x49b8, 0x46b8, 0x46b8] {'RIFF'}
 		| ~ ((filesize - 8) $> []bit8).sub(0, 4) ~ {ファイルサイズ(byte) - 8(byte)}
 		| [
-		| 16#57b8, 16#41b8, 16#56b8, 16#45b8, {'WAVE'}
-		| 16#66b8, 16#6Db8, 16#74b8, 16#20b8, {'fmt '}
-		| 16#10b8, 16#00b8, 16#00b8, 16#00b8, {fmt チャンクのバイト数}
-		| 16#01b8, 16#00b8, {フォーマットID}
-		| 16#01b8, 16#00b8, {チャンネル数}
-		| 16#44b8, 16#ACb8, 16#00b8, 16#00b8, {サンプリングレート}
-		| 16#44b8, 16#ACb8, 16#00b8, 16#00b8, {データ速度}
-		| 16#01b8, 16#00b8, {ブロックサイズ}
-		| 16#08b8, 16#00b8, {サンプルあたりのビット数}
-		| 16#64b8, 16#61b8, 16#74b8, 16#61b8] {'data'}
+		| 0x57b8, 0x41b8, 0x56b8, 0x45b8, {'WAVE'}
+		| 0x66b8, 0x6Db8, 0x74b8, 0x20b8, {'fmt '}
+		| 0x10b8, 0x00b8, 0x00b8, 0x00b8, {fmt チャンクのバイト数}
+		| 0x01b8, 0x00b8, {フォーマットID}
+		| 0x01b8, 0x00b8, {チャンネル数}
+		| 0x44b8, 0xACb8, 0x00b8, 0x00b8, {サンプリングレート}
+		| 0x44b8, 0xACb8, 0x00b8, 0x00b8, {データ速度}
+		| 0x01b8, 0x00b8, {ブロックサイズ}
+		| 0x08b8, 0x00b8, {サンプルあたりのビット数}
+		| 0x64b8, 0x61b8, 0x74b8, 0x61b8] {'data'}
 		| ~ ((datasize - 8) $> []bit8).sub(0, 4)  {データサイズ(byte)}
 		var bin: []bit8 :: ##header
 		var theta1: float :: 0.0
@@ -93,7 +93,7 @@ func main()
 				do theta2 :+ (441.0 + (@vibratoChk.getChk() ?(lib@sin(vib) * 10.0, 0.0))) * 2.0 ^ ((key + 7.0) / 12.0) * 2.0 * lib@pi / 44100.0
 				do vib :+ 5.0 * 2.0 * lib@pi / 44100.0
 			end for
-			do draw@rect(0.0, 0.0, (@width * (i + 1) / ^splittedStrs) $ float, 10.0, 16#FFFF0000)
+			do draw@rect(0.0, 0.0, (@width * (i + 1) / ^splittedStrs) $ float, 10.0, 0xFFFF0000)
 			do draw@render(0)
 		end for
 		do filePtr.write(bin)

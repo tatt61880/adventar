@@ -48,11 +48,11 @@ func main()
 	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, wndSizeX, wndSizeY, "Mandelbrot set")
 	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, wndSizeX, wndSizeY, %scale, %scale, false)
 	while(wnd@act())
-		do draw@rect(0.0, 0.0, wndSizeX $ float, wndSizeY $ float, 16#FF6188FF)
+		do draw@rect(0.0, 0.0, wndSizeX $ float, wndSizeY $ float, 0xFF6188FF)
 		for row(0, sizeY - 1)
 			for col(0, sizeX - 1)
 				var c: int :: (colors[sizeY - 1 - row][col] * 255.0) $ int
-				do draw@rect((col + margin) $ float, (row + margin) $ float, 1.0, 1.0, 16#FF000000 + c * 16#10101)
+				do draw@rect((col + margin) $ float, (row + margin) $ float, 1.0, 1.0, 0xFF000000 + c * 0x10101)
 			end for
 		end for
 		do draw@render(30)

@@ -240,21 +240,21 @@ func bitBlt(x: float, y: float, id: int)
 	{ セガテトリスの配色にしました。 }
 	switch(id)
 	case 0 {背景}
-		do draw@rect(x,       y,       @px, @px, 16#FFDDDDFF)
+		do draw@rect(x,       y,       @px, @px, 0xFFDDDDFF)
 	case 1 {I}
-		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 16#FFFF0000)
+		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 0xFFFF0000)
 	case 2 {O}
-		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 16#FFFFFF00)
+		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 0xFFFFFF00)
 	case 3 {S}
-		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 16#FFFF00FF)
+		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 0xFFFF00FF)
 	case 4 {Z}
-		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 16#FF00FF00)
+		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 0xFF00FF00)
 	case 5 {J}
-		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 16#FF0000FF)
+		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 0xFF0000FF)
 	case 6 {L}
-		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 16#FFFF8000)
+		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 0xFFFF8000)
 	case 7 {T}
-		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 16#FF00FFFF)
+		do draw@rect(x + 1.0, y + 1.0, @bx, @bx, 0xFF00FFFF)
 	end switch
 end func
 

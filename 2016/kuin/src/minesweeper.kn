@@ -143,16 +143,16 @@ func main()
 				switch s(@squares[row][col].state)
 				case %notClicked, %flagged
 					if(@gameCleared)
-						do draw@rect(col$ float * @size, row$ float * @size, @size, @size, 16#FF0000FF)
+						do draw@rect(col$ float * @size, row$ float * @size, @size, @size, 0xFF0000FF)
 					else
-						do draw@rect(col$ float * @size, row$ float * @size, @size - 1.0, @size - 1.0, 16#FFFFFF00 + (s = %notClicked ?(255, 0)))
+						do draw@rect(col$ float * @size, row$ float * @size, @size - 1.0, @size - 1.0, 0xFFFFFF00 + (s = %notClicked ?(255, 0)))
 					end if
 				case %clicked
 					if(@squares[row][col].mine = 1)
-						do draw@rect(col$ float * @size, row$ float * @size, @size - 1.0, @size - 1.0, 16#FFFF0000)
+						do draw@rect(col$ float * @size, row$ float * @size, @size - 1.0, @size - 1.0, 0xFFFF0000)
 					else
 						if(@squares[row][col].number <> 0)
-							do @font.draw((col$ float + 0.25) * @size, row$ float * @size, "\{@squares[row][col].number}", 16#FFD0D0D0)
+							do @font.draw((col$ float + 0.25) * @size, row$ float * @size, "\{@squares[row][col].number}", 0xFFD0D0D0)
 						end if
 					end if
 				end switch

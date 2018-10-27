@@ -2,8 +2,8 @@ const title: []char :: "Countdown"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
 var font: draw@Font
-const fontColor: int :: 16#FFAA33AA
-const colorBackground: int :: 16#FFFFFFAA
+const fontColor: int :: 0xFFAA33AA
+const colorBackground: int :: 0xFFFFFFAA
 const width: int :: 320
 const height: int :: 320
 const countTime: int :: 10

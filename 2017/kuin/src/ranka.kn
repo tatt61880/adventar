@@ -10,15 +10,17 @@ const trim: int :: @width / 2
 const size: float :: 50.0
 var board: [][][]@Ranka
 var colorArray: []int
-const lineColor: int :: 16#FF333333
+const lineColor: int :: 0xFF333333
 
 func main()
 	do @wndMain :: wnd@makeWnd(null, %fix, @wndWidth, @wndHeight, @title)
 	do @drawMain :: wnd@makeDraw(@wndMain, 0, 0, @wndWidth, @wndHeight, %scale, %scale, false)
 	do @font :: draw@makeFont(null, (@size / 2.0) $ int, true, false, true, 0.0)
 	do wnd@msgBox(@wndMain, "イージー碁:Ranka(ランカ)というゲームを作ろうとしている途中です。\n相手のコマを先に5つ取った方が勝ちのゲームです！\n※禁止ルールや取得したコマ数のカウントは実装していません。", @title, %none, %ok)
-	do @colorArray :: [16#FFDDDDDD, 16#FFFF0000, 16#FF00AA00]
-	do draw@clearColor(16#FFAAAAAA)
+	do wnd@act()
+	do draw@clearColor(0xFFAAAAAA)
+	do draw@render(0)
+	do @colorArray :: [0xFFDDDDDD, 0xFFFF0000, 0xFF00AA00]
 	do @drawMain.onMouseUpL :: @drawMainOnMouseUpL
 	while(@game())
 	end while
@@ -27,8 +29,8 @@ end func
 func game(): bool
 	do @reset()
 	do @nextColor :: %red
-	while gameLoop(wnd@act())
-		do @drawAll()
+	do @drawAll()
+	while(wnd@act())
 	end while
 end func
 
@@ -42,7 +44,7 @@ func drawAll()
 			end for
 		end for
 	end for
-	do draw@render(30)
+	do draw@render(0)
 end func
 
 func reset()
@@ -126,6 +128,7 @@ func drawMainOnMouseUpL(wnd: wnd@Draw, xMouse: int, yMouse: int)
 						do check(1 - i, x + i, y, @nextColor)
 						do check(1 - i, x + i - 1, y, @nextColor)
 						do check(1 - i, x, y + 2 * i - 1, @nextColor)
+						do @drawAll()
 					end if
 					break i
 				end if

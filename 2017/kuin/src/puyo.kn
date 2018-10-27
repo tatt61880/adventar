@@ -9,7 +9,7 @@ const width: int :: 6
 const height: int :: 12
 const size: float :: 35.0
 const r: float :: @size / 2.0
-const wallColor: int :: 16#FFFF8800
+const wallColor: int :: 0xFFFF8800
 var board: [][]@Puyo
 var colorArray: []int
 var puyopuyo: @Puyopuyo
@@ -23,7 +23,7 @@ func main()
 	do @fontSmall :: draw@makeFont(null, (@size / 3.0) $ int, true, false, true, 0.0)
 	do wnd@onKeyPress(@onKeyPress)
 	do wnd@msgBox(@wndMain, "【操作方法】\n移動:[←][↓][→]\n回転:[a][s]\n色替え:[Enter]\nポーズ:[Space]", @title, %none, %ok)
-	do @colorArray :: [0, 16#FFFF0000, 16#FF00AA00, 16#FF0000FF, 16#FFFFFF00]
+	do @colorArray :: [0, 0xFFFF0000, 0xFF00AA00, 0xFF0000FF, 0xFFFFFF00]
 	assert ^@colorArray = (%colorNum $ @Color $ int)
 	while(@game())
 	end while
@@ -138,10 +138,10 @@ func drawAll()
 		do @puyopuyo.draw()
 	end if
 	if(@pausedFlag)
-		do draw@rect(0.0, 0.0, (@width + 2) $ float * @size, (@height + 1) $ float * @size, 16#A0000000)
-		do @font.draw(@size * 2.5, @size * 5.0, "[Paused]", 16#FFFFFFFF)
-		do @fontSmall.draw(@size * 2.2, @size * 6.0, "Press space-key", 16#FFFFFFFF)
-		do @fontSmall.draw(@size * 2.7, @size * 6.7, "to continue", 16#FFFFFFFF)
+		do draw@rect(0.0, 0.0, (@width + 2) $ float * @size, (@height + 1) $ float * @size, 0xA0000000)
+		do @font.draw(@size * 2.5, @size * 5.0, "[Paused]", 0xFFFFFFFF)
+		do @fontSmall.draw(@size * 2.2, @size * 6.0, "Press space-key", 0xFFFFFFFF)
+		do @fontSmall.draw(@size * 2.7, @size * 6.7, "to continue", 0xFFFFFFFF)
 	end if
 	do draw@render(60)
 
@@ -263,10 +263,10 @@ class Puyo()
 	end func
 	+func draw()
 		do draw@circle(@size * (me.x $ float + 1.50), @size * (me.y $ float - 0.5), @r, @r, @colorArray[me.color $ int])
-		do draw@circle(@size * (me.x $ float + 1.27), @size * (me.y $ float - 0.6), @r * 0.35, @r * 0.40, 16#FFDDDDDD)
-		do draw@circle(@size * (me.x $ float + 1.27), @size * (me.y $ float - 0.6), @r * 0.20, @r * 0.20, 16#FF333333)
-		do draw@circle(@size * (me.x $ float + 1.73), @size * (me.y $ float - 0.6), @r * 0.35, @r * 0.40, 16#FFDDDDDD)
-		do draw@circle(@size * (me.x $ float + 1.73), @size * (me.y $ float - 0.6), @r * 0.20, @r * 0.20, 16#FF333333)
+		do draw@circle(@size * (me.x $ float + 1.27), @size * (me.y $ float - 0.6), @r * 0.35, @r * 0.40, 0xFFDDDDDD)
+		do draw@circle(@size * (me.x $ float + 1.27), @size * (me.y $ float - 0.6), @r * 0.20, @r * 0.20, 0xFF333333)
+		do draw@circle(@size * (me.x $ float + 1.73), @size * (me.y $ float - 0.6), @r * 0.35, @r * 0.40, 0xFFDDDDDD)
+		do draw@circle(@size * (me.x $ float + 1.73), @size * (me.y $ float - 0.6), @r * 0.20, @r * 0.20, 0xFF333333)
 	end func
 end class
 

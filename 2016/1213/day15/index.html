@@ -14,12 +14,12 @@
 <p>※Firefoxで動作確認を行いました。動作しないブラウザがあるかもしれません。</p>
 -->
 <script src="../src/isPrimeDrill.js"></script>
-<span id="TargetNum">初期化中… (※このメッセージが5秒以上表示されている場合は、JavaScriptが機能していない可能性があります。また、IE8以下には対応していません。) <br></span>
+<span id="spanTargetNum">初期化中… (※このメッセージが5秒以上表示されている場合は、JavaScriptが機能していない可能性があります。また、IE8以下には対応していません。) <br></span>
 <input type="button" class="large_button" style="background-color:#DEF; height:48px; border-radius:24px; padding:0px 10px 0px 10px; margin:5px 5px 5px 5px; font-size:130%;" value="素数である" id="Button_YES" onclick="onButtonClick_Judge(event, true)">
 <input type="button" class="large_button" style="background-color:#DEF; height:48px; border-radius:24px; padding:0px 10px 0px 10px; margin:5px 5px 5px 5px; font-size:130%;" value="素数ではない" id="Button_NO" onclick="onButtonClick_Judge(event, false)">
 
-<textarea id="Textarea_Results" rows="5" style="width:98%; margin:5px 1% 5px 1%; border:1px solid; border-color:#B0D4E5"></textarea><br>
-<span id="Span_Results"><br></span>
+<textarea id="textareaResults" rows="5" style="width:98%; margin:5px 1% 5px 1%; border:1px solid; border-color:#B0D4E5"></textarea><br>
+<span id="spanResults"><br></span>
 
 <h2>「素数大富豪用 素数判定ドリル」の仕様</h2>
 <ul>

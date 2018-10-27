@@ -1,8 +1,8 @@
 const title: []char :: "Heptagon"
 var wndMain: wnd@Wnd 
 var drawMain: wnd@Draw
-const color: int :: 16#FFAA33AA
-const colorBackground: int :: 16#FFFFFFAA
+const color: int :: 0xFFAA33AA
+const colorBackground: int :: 0xFFFFFFAA
 const width: int :: 320
 const height: int :: 320
 const n: int :: 7

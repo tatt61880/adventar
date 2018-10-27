@@ -134,17 +134,17 @@ func drawMaze()
 	for h(0, 2 * @H)
 		for w(0, 2 * @W)
 			if(@map[h][w])
-				do draw@rect(w $ float * @px, h $ float * @px, @px, @px, 16#FF00DDBB)
+				do draw@rect(w $ float * @px, h $ float * @px, @px, @px, 0xFF00DDBB)
 			end if
 		end for
 	end for
 end func
 
 func drawUser()
-	do draw@circle((@userX $ float + 0.5) * @px, (@userY $ float + 0.5) * @px, @px * 0.5, @px * 0.5, 16#FFFFDD00)
+	do draw@circle((@userX $ float + 0.5) * @px, (@userY $ float + 0.5) * @px, @px * 0.5, @px * 0.5, 0xFFFFDD00)
 end func
 func drawGoal()
-	do draw@rect((@goalX $ float - 0.2) * @px, (@goalY $ float - 0.2) * @px, @px * 1.4, @px * 1.4, 16#FFFF0000)
+	do draw@rect((@goalX $ float - 0.2) * @px, (@goalY $ float - 0.2) * @px, @px * 1.4, @px * 1.4, 0xFFFF0000)
 end func
 
 {アローキー(←↓↑→)で操作します。}
