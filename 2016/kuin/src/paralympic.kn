@@ -18,7 +18,7 @@ func main()
 	do @num :: 34 {12の時に通常のパラリンピックのエンブレムになります。}
 	do @init()
 	do @drawMain.onPaint :: @onPaint
-	do wnd@onKeyPress(@onKeyPress)
+	do wnd@setOnKeyPress(@onKeyPress)
 
 	while(wnd@act())
 	end while
