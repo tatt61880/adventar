@@ -78,8 +78,7 @@ func main()
 		var theta2: float :: 0.0
 		var vib: float :: 0.0
 		for i(0, ^splittedStrs - 1)
-			var key: float
-			do splittedStrs[i].toFloat(&key)
+			var key: float :: splittedStrs[i].toFloat(&)
 			for j(0, 44100 / 4)
 				if(@chordsChk.getChk())
 					do bin :~ [(

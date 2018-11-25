@@ -39,12 +39,9 @@ func main()
 end func
 
 func calc(wnd: wnd@Edit)
-	var birthY: int
-	var birthM: int
-	var birthD: int
-	do @yEdit.getText().toInt(&birthY)
-	do @mEdit.getText().toInt(&birthM)
-	do @dEdit.getText().toInt(&birthD)
+	var birthY: int :: @yEdit.getText().toInt(&)
+	var birthM: int :: @mEdit.getText().toInt(&)
+	var birthD: int :: @dEdit.getText().toInt(&)
 	if(birthY < 1970 | 3000 < birthY | birthM <= 0 | 12 < birthM | birthD <= 0 | 31 < birthD)
 		do @resultEdit.setText("ERROR:対称範囲外の値が入力されています。")
 		ret

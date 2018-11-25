@@ -10,7 +10,7 @@ func encode(str: []char): []char
 	end if
 	var res: []char :: ""
 	for i(0, ^str - 1)
-		do res :~ @encodeDict.get(str[i] $ int) ~ "   "
+		do res :~ @encodeDict.get(str[i] $ int, &) ~ "   "
 	end for
 	ret res.sub(0, ^res - 3)
 end func
@@ -22,7 +22,7 @@ func decode(str: []char): []char
 	var c: char
 	for e(0, ^str - 1)
 		if(str[e] = ' ')
-			do c :: @decodeDict.get(str.sub(s, e - s))
+			do c :: @decodeDict.get(str.sub(s, e - s), &)
 			if(c = '\0')
 				do cnt :+ 1
 				if(cnt % 7 = 6) {7つ以上の空白を単語の区切りと見なします}
@@ -35,7 +35,7 @@ func decode(str: []char): []char
 			do s :: e + 1
 		end if
 	end for
-	do res :~ [@decodeDict.get(str.sub(s, ^str - s))]
+	do res :~ [@decodeDict.get(str.sub(s, ^str - s), &)]
 	ret res
 end func
 

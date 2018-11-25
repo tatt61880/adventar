@@ -12,9 +12,9 @@ var d: int
 func main()
 	do lib@intToDate(lib@now(), &@year, &@month, &, &, &, &)
 	if(^lib@cmdLine() > 0)
-		do lib@cmdLine()[0].toInt(&@year)
+		do @year :: lib@cmdLine()[0].toInt(&)
 		if(^lib@cmdLine() > 1)
-			do lib@cmdLine()[1].toInt(&@month)
+			do @month :: lib@cmdLine()[1].toInt(&)
 		end if
 	end if
 	assert @year >= 1582
