@@ -1,37 +1,41 @@
-{ Quine in Kuin. @tatt61880 }
+{ Quine in Kuin. @tatt61880 {Last Modified: 2018/12/03 22:29:32.}}
 func main()
-    func quine(str: []char)
-        var s: []char :: ""
-        for i(0, ^str - 1)
-            var c: char :: str[i]
-            switch(c)
-            case '\n'
-                do s :~ "\\n\" ~\n    | \""
-            case '\\', '"'
-                do s :~ ['\\', c]
-            default
-                do s :~ [c]
-            end switch
-        end for
-        do cui@print("\{str ~ s}\"\n    do quine(str)\nend func\n")
-    end func
-    const str: []char :: "{ Quine in Kuin. @tatt61880 }\n" ~
-    | "func main()\n" ~
-    | "    func quine(str: []char)\n" ~
-    | "        var s: []char :: \"\"\n" ~
-    | "        for i(0, ^str - 1)\n" ~
-    | "            var c: char :: str[i]\n" ~
-    | "            switch(c)\n" ~
-    | "            case '\\n'\n" ~
-    | "                do s :~ \"\\\\n\\\" ~\\n    | \\\"\"\n" ~
-    | "            case '\\\\', '\"'\n" ~
-    | "                do s :~ ['\\\\', c]\n" ~
-    | "            default\n" ~
-    | "                do s :~ [c]\n" ~
-    | "            end switch\n" ~
-    | "        end for\n" ~
-    | "        do cui@print(\"\\{str ~ s}\\\"\\n    do quine(str)\\nend func\\n\")\n" ~
-    | "    end func\n" ~
-    | "    const str: []char :: \""
-    do quine(str)
+	func quine(str: []char)
+		var s: []char :: ""
+		for i(0, ^str - 1)
+			var c: char :: str[i]
+			switch(c)
+			case '\n'
+				do s :~ "\\n\" ~\n\t|\""
+			case '\t'
+				do s :~ "\\t"
+			case '\\', '"'
+				do s :~ ['\\', c]
+			default
+				do s :~ [c]
+			end switch
+		end for
+		do cui@print("\{str ~ s}\"\n\tdo quine(str)\nend func\n")
+	end func
+	const str: []char :: "{ Quine in Kuin. @tatt61880 {Last Modified: 2018/12/03 22:29:32.}}\n" ~
+	|"func main()\n" ~
+	|"\tfunc quine(str: []char)\n" ~
+	|"\t\tvar s: []char :: \"\"\n" ~
+	|"\t\tfor i(0, ^str - 1)\n" ~
+	|"\t\t\tvar c: char :: str[i]\n" ~
+	|"\t\t\tswitch(c)\n" ~
+	|"\t\t\tcase '\\n'\n" ~
+	|"\t\t\t\tdo s :~ \"\\\\n\\\" ~\\n\\t|\\\"\"\n" ~
+	|"\t\t\tcase '\\t'\n" ~
+	|"\t\t\t\tdo s :~ \"\\\\t\"\n" ~
+	|"\t\t\tcase '\\\\', '\"'\n" ~
+	|"\t\t\t\tdo s :~ ['\\\\', c]\n" ~
+	|"\t\t\tdefault\n" ~
+	|"\t\t\t\tdo s :~ [c]\n" ~
+	|"\t\t\tend switch\n" ~
+	|"\t\tend for\n" ~
+	|"\t\tdo cui@print(\"\\{str ~ s}\\\"\\n\\tdo quine(str)\\nend func\\n\")\n" ~
+	|"\tend func\n" ~
+	|"\tconst str: []char :: \""
+	do quine(str)
 end func
