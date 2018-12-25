@@ -1,8 +1,9 @@
 {迷路です。ゴールすると、ゴールの位置が反対側になって迷路が再構築されるため、無限に遊べます。}
+{スペースキーを押すと、表示範囲が変わります。}
 
 {ある程度小さいサイズの方がおすすめです。}
-const W: int :: 30
-const H: int :: 20
+const W: int :: 16
+const H: int :: 12
 const px: float :: 10.0
 const WW: int :: (2 * @W + 1) * @px $ int
 const WH: int :: (2 * @H + 1) * @px $ int
@@ -14,6 +15,7 @@ func main()
 	do @createMaze()
 	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, @WW, @WH, "無限に遊べる迷路です")
 	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @WW, @WH, %scale, %scale, false)
+	do @initDrawAreaFuncs()
 
 	while(wnd@act())
 		do @moveUser()
@@ -67,7 +69,7 @@ func carve()
 			do @aisle[@y][@x] :: @R.or(@R.shl(4))
 		end switch
 	end while
-
+	
 	func selectDir(): bit8
 		while(true)
 			var ds: []bit8 :: [@U, @R, @D, @L]
@@ -92,17 +94,17 @@ func carve()
 				do @x :- 1
 			end switch
 		end while
-
+		
 		func checkDir(d: bit8): bool
 			switch(d)
 			case @U
-				ret (@y > 0      & @aisle[@y - 1][@x] = 0b8)
+				ret(@y > 0 & @aisle[@y - 1][@x] = 0b8)
 			case @R
-				ret (@x + 1 < @W & @aisle[@y][@x + 1] = 0b8)
+				ret(@x + 1 < @W & @aisle[@y][@x + 1] = 0b8)
 			case @D
-				ret (@y + 1 < @H & @aisle[@y + 1][@x] = 0b8)
+				ret(@y + 1 < @H & @aisle[@y + 1][@x] = 0b8)
 			case @L
-				ret (@x > 0      & @aisle[@y][@x - 1] = 0b8)
+				ret(@x > 0 & @aisle[@y][@x - 1] = 0b8)
 			default
 				ret false
 			end switch
@@ -133,15 +135,17 @@ end func
 func drawMaze()
 	for h(0, 2 * @H)
 		for w(0, 2 * @W)
-			if(@map[h][w])
-				do draw@rect(w $ float * @px, h $ float * @px, @px, @px, 0xFF00DDBB)
+			if(@isDrawArea(w, h))
+				do draw@rect(w $ float * @px, h $ float * @px, @px, @px, @map[h][w] ?(0xFF008855, 0xFFFFCCCC))
 			end if
 		end for
 	end for
 end func
 
+
+
 func drawUser()
-	do draw@circle((@userX $ float + 0.5) * @px, (@userY $ float + 0.5) * @px, @px * 0.5, @px * 0.5, 0xFFFFDD00)
+	do draw@circle((@userX $ float + 0.5) * @px, (@userY $ float + 0.5) * @px, @px * 0.5, @px * 0.5, 0xFF0000FF)
 end func
 func drawGoal()
 	do draw@rect((@goalX $ float - 0.2) * @px, (@goalY $ float - 0.2) * @px, @px * 1.4, @px * 1.4, 0xFFFF0000)
@@ -173,10 +177,85 @@ func moveUser(): bool
 			ret true
 		end if
 	end if
+	if(myPadPress(%a))
+		do @isDrawAreaFuncId :+ 1
+		do @isDrawAreaFuncId :% ^@isDrawAreaFuncs
+		do @isDrawArea :: @isDrawAreaFuncs[@isDrawAreaFuncId]
+	end if
 	ret false
-
+	
 	func myPadPress(btn: input@PadBtn): bool
 		var n: int :: input@pad(0, btn)
 		ret n = 1 | n >= 10 & n % 4 = 0
+	end func
+end func
+
+var isDrawArea: func<(int, int): bool>
+var isDrawAreaFuncs: []func<(int, int): bool>
+var isDrawAreaFuncId: int
+func initDrawAreaFuncs()
+	do @isDrawAreaFuncs :: [
+	|drawWholeArea,
+	|drawCircleAreaS,
+	|drawCircleAreaM,
+	|drawCircleAreaL,
+	|drawSquareAreaS,
+	|drawSquareAreaM,
+	|drawSquareAreaL,
+	|drawLadarAreaS,
+	|drawLadarAreaM,
+	|drawLadarAreaL
+	|]
+	do @isDrawArea :: @isDrawAreaFuncs[0]
+	;do @isDrawArea :: @isDrawAreaFuncs[^@isDrawAreaFuncs - 1]
+
+	func drawWholeArea(w: int, h: int): bool
+		ret true
+	end func
+
+	func drawCircleAreaSub(w: int, h: int, size: int): bool
+		ret (@userX - w) ^ 2 + (@userY - h) ^ 2 < size
+	end func
+	func drawCircleAreaS(w: int, h: int): bool
+		ret drawCircleAreaSub(w, h, 18)
+	end func
+	func drawCircleAreaM(w: int, h: int): bool
+		ret drawCircleAreaSub(w, h, 30)
+	end func
+	func drawCircleAreaL(w: int, h: int): bool
+		ret drawCircleAreaSub(w, h, 51)
+	end func
+
+	func drawSquareAreaSub(w: int, h: int, size: int): bool
+		ret
+		|(@userX / size = w / size | @userX / size = (w - 1) / size) &
+		|(@userY / size = h / size | @userY / size = (h - 1) / size)
+	end func
+	func drawSquareAreaS(w: int, h: int): bool
+		ret drawSquareAreaSub(w, h, 4)
+	end func
+	func drawSquareAreaM(w: int, h: int): bool
+		ret drawSquareAreaSub(w, h, 6)
+	end func
+	func drawSquareAreaL(w: int, h: int): bool
+		ret drawSquareAreaSub(w, h, 8)
+	end func
+
+	func drawLadarAreaSub(w: int, h: int, ratio: float): bool
+		if(drawCircleAreaSub(w, h, 4))
+			ret true
+		end if
+		var angle: float :: (draw@cnt() $ float * 0.005) % (2.0 * lib@pi)
+		var posRot: float :: lib@invRot(w $ float, h $ float, @userX $ float, @userY $ float)
+		ret (2.0 * lib@pi + posRot - angle).abs() % (2.0 * lib@pi) < ratio * (2.0 * lib@pi)
+	end func
+	func drawLadarAreaS(w: int, h: int): bool
+		ret drawLadarAreaSub(w, h, 0.125)
+	end func
+	func drawLadarAreaM(w: int, h: int): bool
+		ret drawLadarAreaSub(w, h, 0.25)
+	end func
+	func drawLadarAreaL(w: int, h: int): bool
+		ret drawLadarAreaSub(w, h, 0.5)
 	end func
 end func
