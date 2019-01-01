@@ -18,6 +18,7 @@ func main()
 	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, @wndSizeX, @wndSizeY, @title)
 	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @wndSizeX, @wndSizeY, %scale, %scale, false)
 	do drawMain.onPaint :: @onPaint
+	do drawMain.paint()
 	while(wnd@act())
 	end while
 end func
