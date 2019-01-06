@@ -7,6 +7,7 @@ const H: int :: 12
 const px: float :: 10.0
 const WW: int :: (2 * @W + 1) * @px $ int
 const WH: int :: (2 * @H + 1) * @px $ int
+var drawAreaFuncs: []@DrawAreaFuncs
 
 func main()
 	do @map :: #[2 * @H + 1, 2 * @W + 1]bool
@@ -136,19 +137,22 @@ func drawMaze()
 	for h(0, 2 * @H)
 		for w(0, 2 * @W)
 			if(@isDrawArea(w, h))
-				do draw@rect(w $ float * @px, h $ float * @px, @px, @px, @map[h][w] ?(0xFF008855, 0xFFFFCCCC))
+				do draw2d@rect(w $ float * @px, h $ float * @px, @px, @px, @map[h][w] ?(0xFF008855, 0xFFFFCCCC))
 			end if
 		end for
 	end for
+	if (@drawAreaEdge <>& null)
+		do @drawAreaEdge((@userX $ float + 0.5) * @px, (@userY $ float + 0.5) * @px)
+	end if
 end func
 
 
 
 func drawUser()
-	do draw@circle((@userX $ float + 0.5) * @px, (@userY $ float + 0.5) * @px, @px * 0.5, @px * 0.5, 0xFF0000FF)
+	do draw2d@circle((@userX $ float + 0.5) * @px, (@userY $ float + 0.5) * @px, @px * 0.5, @px * 0.5, 0xFF0000FF)
 end func
 func drawGoal()
-	do draw@rect((@goalX $ float - 0.2) * @px, (@goalY $ float - 0.2) * @px, @px * 1.4, @px * 1.4, 0xFFFF0000)
+	do draw2d@rect((@goalX $ float - 0.2) * @px, (@goalY $ float - 0.2) * @px, @px * 1.4, @px * 1.4, 0xFFFF0000)
 end func
 
 {アローキー(←↓↑→)で操作します。}
@@ -179,8 +183,9 @@ func moveUser(): bool
 	end if
 	if(myPadPress(%a))
 		do @isDrawAreaFuncId :+ 1
-		do @isDrawAreaFuncId :% ^@isDrawAreaFuncs
-		do @isDrawArea :: @isDrawAreaFuncs[@isDrawAreaFuncId]
+		do @isDrawAreaFuncId :% ^@drawAreaFuncs
+		do @isDrawArea :: @drawAreaFuncs[@isDrawAreaFuncId].isDrawArea
+		do @drawAreaEdge :: @drawAreaFuncs[@isDrawAreaFuncId].drawAreaEdge
 	end if
 	ret false
 	
@@ -190,24 +195,39 @@ func moveUser(): bool
 	end func
 end func
 
-var isDrawArea: func<(int, int): bool>
-var isDrawAreaFuncs: []func<(int, int): bool>
 var isDrawAreaFuncId: int
+var isDrawArea: func<(int, int): bool>
+var drawAreaEdge: func<(float, float)>
+
+class DrawAreaFuncs()
+	+var isDrawArea: func<(int, int): bool>
+	+var drawAreaEdge: func<(float, float)>
+	+func init(a: func<(int, int): bool>, b: func<(float, float)>): @DrawAreaFuncs
+		do me.isDrawArea :: a
+		do me.drawAreaEdge :: b
+		ret me
+	end func
+end class
+
 func initDrawAreaFuncs()
-	do @isDrawAreaFuncs :: [
-	|drawWholeArea,
-	|drawCircleAreaS,
-	|drawCircleAreaM,
-	|drawCircleAreaL,
-	|drawSquareAreaS,
-	|drawSquareAreaM,
-	|drawSquareAreaL,
-	|drawLadarAreaS,
-	|drawLadarAreaM,
-	|drawLadarAreaL
-	|]
-	do @isDrawArea :: @isDrawAreaFuncs[0]
-	;do @isDrawArea :: @isDrawAreaFuncs[^@isDrawAreaFuncs - 1]
+	do @drawAreaFuncs :: #[0]@DrawAreaFuncs
+	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawWholeArea, null)]
+	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawCircleAreaS, drawCircleAreaEdgeS)]
+	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawCircleAreaM, drawCircleAreaEdgeM)]
+	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawCircleAreaL, drawCircleAreaEdgeL)]
+	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawSquareAreaS, null)]
+	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawSquareAreaM, null)]
+	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawSquareAreaL, null)]
+	{
+	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawLadarAreaS, drawLadarAreaEdgeS)]
+	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawLadarAreaM, drawLadarAreaEdgeM)]
+	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawLadarAreaL, drawLadarAreaEdgeL)]
+	}
+
+	var id: int :: 0
+	; do id :: ^@drawAreaFuncs - 1
+	do @isDrawArea :: @drawAreaFuncs[id].isDrawArea
+	do @drawAreaEdge :: @drawAreaFuncs[id].drawAreaEdge
 
 	func drawWholeArea(w: int, h: int): bool
 		ret true
@@ -224,6 +244,19 @@ func initDrawAreaFuncs()
 	end func
 	func drawCircleAreaL(w: int, h: int): bool
 		ret drawCircleAreaSub(w, h, 51)
+	end func
+
+	func drawCircleAreaEdgeSub(w: float, h: float, size: int)
+		do draw2d@circleLine(w, h, size $ float, size $ float, @px * 2 $ float, draw@black)
+	end func
+	func drawCircleAreaEdgeS(w: float, h: float)
+		do drawCircleAreaEdgeSub(w, h, 45)
+	end func
+	func drawCircleAreaEdgeM(w: float, h: float)
+		do drawCircleAreaEdgeSub(w, h, 60)
+	end func
+	func drawCircleAreaEdgeL(w: float, h: float)
+		do drawCircleAreaEdgeSub(w, h, 75)
 	end func
 
 	func drawSquareAreaSub(w: int, h: int, size: int): bool
@@ -245,7 +278,7 @@ func initDrawAreaFuncs()
 		if(drawCircleAreaSub(w, h, 4))
 			ret true
 		end if
-		var angle: float :: (draw@cnt() $ float * 0.005) % (2.0 * lib@pi)
+		var angle: float :: currentAngle()
 		var posRot: float :: lib@invRot(w $ float, h $ float, @userX $ float, @userY $ float)
 		ret (2.0 * lib@pi + posRot - angle).abs() % (2.0 * lib@pi) < ratio * (2.0 * lib@pi)
 	end func
@@ -257,5 +290,35 @@ func initDrawAreaFuncs()
 	end func
 	func drawLadarAreaL(w: int, h: int): bool
 		ret drawLadarAreaSub(w, h, 0.5)
+	end func
+
+	func drawLadarAreaEdgeSub(w: float, h: float, ratio: float)
+		const rMin: float :: @px * 1.7
+		var rMax: float :: [@W, @H].max() $ float * @px * 3.0
+		var angle: float :: currentAngle()
+		var x1: float :: rMin * lib@cos(angle) + w $ float
+		var y1: float :: rMin * lib@sin(angle) + h $ float
+		var x2: float :: rMax * lib@cos(angle) + w $ float
+		var y2: float :: rMax * lib@sin(angle) + h $ float
+		do draw2d@line(x1, y1, x2, y2, @px * 1.5, draw@black)
+		do angle :+ ratio * 2.0 * lib@pi
+		do x1 :: rMin * lib@cos(angle) + w $ float
+		do y1 :: rMin * lib@sin(angle) + h $ float
+		do x2 :: rMax * lib@cos(angle) + w $ float
+		do y2 :: rMax * lib@sin(angle) + h $ float
+		do draw2d@line(x1, y1, x2, y2, @px * 1.5, draw@black)
+	end func
+	func drawLadarAreaEdgeS(w: float, h: float)
+		do drawLadarAreaEdgeSub(w, h, 0.125)
+	end func
+	func drawLadarAreaEdgeM(w: float, h: float)
+		do drawLadarAreaEdgeSub(w, h, 0.25)
+	end func
+	func drawLadarAreaEdgeL(w: float, h: float)
+		do drawLadarAreaEdgeSub(w, h, 0.5)
+	end func
+
+	func currentAngle(): float
+		ret (draw@cnt() $ float * 0.005) % (2.0 * lib@pi)
 	end func
 end func
