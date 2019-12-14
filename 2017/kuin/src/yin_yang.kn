@@ -4,10 +4,10 @@ func main()
 end func
 
 func yinYang(r: int)
-	for y(-r, r + 1)
+	for y(-r, r)
 		var str: []char :: ""
-		for x(-2 * r, 2 * r + 1)
-			if(  isInsideCircle(-r, r, x, y))
+		for x(-2 * r, 2 * r)
+			if(isInsideCircle(-r, r, x, y))
 				do str :~ "#"
 			elif(isInsideCircle( r, r, x, y))
 				do str :~ "."

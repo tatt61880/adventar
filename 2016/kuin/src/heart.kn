@@ -1,10 +1,10 @@
 func main()
-    do @printHeart(10)
-    do @printHeart(6)
+	do @printHeart(10)
+	do @printHeart(6)
 end func
 
 func printHeart(r: int)
-    for y(r * 3 / 2, -r, -1)
+	for y(r * 3 / 2, -r, -1)
 		var str: []char :: ""
 		for x(-2 * r, 2 * r)
 			do str :~ [" ♥♡"[((2 * r + x + y) % 2 + 1) * (isInsideHeart((x $ float / 2.0 / r $ float).abs(), y $ float / r $ float) ?(1, 0))]]
