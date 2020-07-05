@@ -1,5 +1,5 @@
 const title: []char :: "ゲーマーじゃんけん判定ゲーム"
-var wndMain: wnd@Wnd 
+var wndMain: wnd@Wnd
 var drawMain: wnd@Draw
 var texP: draw@Tex
 var texS: draw@Tex
@@ -67,7 +67,7 @@ func game(): bool
 			end if
 		end if
 	end while
-
+	
 	func drawAll()
 		const lineColor: int :: 0xFFAAAAAA
 		const fontColor: int :: 0xFF000000
@@ -90,7 +90,7 @@ func game(): bool
 		do @fontSmall.draw(@width / 4.0 * 2.0 + 2.0, @selectAreaY, "3", fontColor)
 		do @fontSmall.draw(@width / 4.0 * 3.0 + 2.0, @selectAreaY, "4", fontColor)
 		do draw@render(30)
-
+		
 		func drawHand(x: float, y: float, hand: @Hand)
 			switch(hand)
 			case %paper
@@ -104,7 +104,7 @@ func game(): bool
 	end func
 end func
 
-func drawMainOnMouseUpL(wnd: wnd@Draw, x: int, y: int)
+func drawMainOnMouseUpL(wnd: wnd@WndBase, x: int, y: int)
 	if(y < @selectAreaY $ int)
 		ret
 	end if
