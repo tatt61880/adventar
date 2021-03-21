@@ -115,7 +115,7 @@ EOD;
           $kn = <<< EOD
 <div>
   <span style="background-color:#f0f8ff; padding:0 10px 0 10px"><a href="../src/$expand_filename">$expand_filename</a></span>
-  <pre class="prettyprint lang-kuin linenums" style="border-radius:0; margin: 0px -10px 0px -10px;">$kn_src</pre>
+  <pre id="code" style="border-radius:0; margin: 0px -10px 0px -10px;">$kn_src</pre>
 </div>
 EOD;
 
@@ -197,19 +197,22 @@ EOD;
 
   if($is_include_kuin_code){
     print <<< EOD
-<link rel="stylesheet" href="http://tatt.ch/kuin/prettify/prettify.css" type="text/css">
-<script src="http://tatt.ch/kuin/prettify/prettify.js"></script>
-<script src="http://tatt.ch/kuin/prettify/lang-kuin.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML" defer="defer"></script>
+<script src="https://tatt61880.github.io/kuin-web/src-noconflict/ace.js?2020-07-17"></script>
+<script src="https://tatt61880.github.io/kuin-web/src-noconflict/ext-language_tools.js?2020-07-17"></script>
 <script>
-    // <![CDATA[
-    (function(){
-        function init(event){
-            prettyPrint();
-        }
-        if(window.addEventListener)window.addEventListener("load",init,false);
-        else if(window.attachEvent)window.attachEvent("onload",init);
-    })();
-    // ]]>
+window.onload = function() {
+  let editor = ace.edit('code');
+  editor.setTheme('ace/theme/kuin');
+  editor.session.setMode('ace/mode/kuin');
+  editor.setReadOnly(true);
+  editor.setOptions({
+    maxLines: 10000,
+    autoScrollEditorIntoView: true,
+    fontSize: '16px',
+  });
+  editor.resize();
+}
 </script>
 
 EOD;
