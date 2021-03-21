@@ -17,7 +17,7 @@ func main()
 	var wndMain: wnd@Wnd :: wnd@makeWnd(null, %aspect, @WW, @WH, "無限に遊べる迷路です")
 	var drawMain: wnd@Draw :: wnd@makeDraw(wndMain, 0, 0, @WW, @WH, %scale, %scale, false)
 	do @initDrawAreaFuncs()
-
+	
 	while(wnd@act())
 		do @moveUser()
 		do @drawMaze()
@@ -74,9 +74,9 @@ func carve()
 	func selectDir(): bit8
 		while(true)
 			var ds: []bit8 :: [@U, @R, @D, @L]
-			do ds.shuffle()
+			var shuffle: []int :: lib@shuffle(4)
 			for i(0, ^ds - 1)
-				var d: bit8 :: ds[i]
+				var d: bit8 :: ds[shuffle[i]]
 				if(checkDir(d))
 					ret d {まだ掘られていない道があったのでそちらに向かいます}
 				end if
@@ -141,7 +141,7 @@ func drawMaze()
 			end if
 		end for
 	end for
-	if (@drawAreaEdge <>& null)
+	if(@drawAreaEdge <>& null)
 		do @drawAreaEdge((@userX $ float + 0.5) * @px, (@userY $ float + 0.5) * @px)
 	end if
 end func
@@ -223,18 +223,18 @@ func initDrawAreaFuncs()
 	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawLadarAreaM, drawLadarAreaEdgeM)]
 	do @drawAreaFuncs :~ [(#@DrawAreaFuncs).init(drawLadarAreaL, drawLadarAreaEdgeL)]
 	}
-
+	
 	var id: int :: 0
 	; do id :: ^@drawAreaFuncs - 1
 	do @isDrawArea :: @drawAreaFuncs[id].isDrawArea
 	do @drawAreaEdge :: @drawAreaFuncs[id].drawAreaEdge
-
+	
 	func drawWholeArea(w: int, h: int): bool
 		ret true
 	end func
-
+	
 	func drawCircleAreaSub(w: int, h: int, size: int): bool
-		ret (@userX - w) ^ 2 + (@userY - h) ^ 2 < size
+		ret(@userX - w) ^ 2 + (@userY - h) ^ 2 < size
 	end func
 	func drawCircleAreaS(w: int, h: int): bool
 		ret drawCircleAreaSub(w, h, 18)
@@ -245,7 +245,7 @@ func initDrawAreaFuncs()
 	func drawCircleAreaL(w: int, h: int): bool
 		ret drawCircleAreaSub(w, h, 51)
 	end func
-
+	
 	func drawCircleAreaEdgeSub(w: float, h: float, size: int)
 		do draw2d@circleLine(w, h, size $ float, size $ float, @px * 2 $ float, draw@black)
 	end func
@@ -258,7 +258,7 @@ func initDrawAreaFuncs()
 	func drawCircleAreaEdgeL(w: float, h: float)
 		do drawCircleAreaEdgeSub(w, h, 75)
 	end func
-
+	
 	func drawSquareAreaSub(w: int, h: int, size: int): bool
 		ret
 		|(@userX / size = w / size | @userX / size = (w - 1) / size) &
@@ -273,14 +273,14 @@ func initDrawAreaFuncs()
 	func drawSquareAreaL(w: int, h: int): bool
 		ret drawSquareAreaSub(w, h, 8)
 	end func
-
+	
 	func drawLadarAreaSub(w: int, h: int, ratio: float): bool
 		if(drawCircleAreaSub(w, h, 4))
 			ret true
 		end if
 		var angle: float :: currentAngle()
 		var posRot: float :: lib@invRot(w $ float, h $ float, @userX $ float, @userY $ float)
-		ret (2.0 * lib@pi + posRot - angle).abs() % (2.0 * lib@pi) < ratio * (2.0 * lib@pi)
+		ret(2.0 * lib@pi + posRot - angle).abs() % (2.0 * lib@pi) < ratio * (2.0 * lib@pi)
 	end func
 	func drawLadarAreaS(w: int, h: int): bool
 		ret drawLadarAreaSub(w, h, 0.125)
@@ -291,7 +291,7 @@ func initDrawAreaFuncs()
 	func drawLadarAreaL(w: int, h: int): bool
 		ret drawLadarAreaSub(w, h, 0.5)
 	end func
-
+	
 	func drawLadarAreaEdgeSub(w: float, h: float, ratio: float)
 		const rMin: float :: @px * 1.7
 		var rMax: float :: [@W, @H].max() $ float * @px * 3.0
@@ -317,8 +317,8 @@ func initDrawAreaFuncs()
 	func drawLadarAreaEdgeL(w: float, h: float)
 		do drawLadarAreaEdgeSub(w, h, 0.5)
 	end func
-
+	
 	func currentAngle(): float
-		ret (draw@cnt() $ float * 0.005) % (2.0 * lib@pi)
+		ret(draw@cnt() $ float * 0.005) % (2.0 * lib@pi)
 	end func
 end func
