@@ -115,7 +115,7 @@ EOD;
           $kn = <<< EOD
 <div>
   <span style="background-color:#f0f8ff; padding:0 10px 0 10px"><a href="../src/$expand_filename">$expand_filename</a></span>
-  <pre id="code" style="border-radius:0; margin: 0px -10px 0px -10px;">$kn_src</pre>
+  <pre id="code" style="margin: 0px -10px;">$kn_src</pre>
 </div>
 EOD;
 
