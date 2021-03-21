@@ -197,7 +197,6 @@ EOD;
 
   if($is_include_kuin_code){
     print <<< EOD
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML" defer="defer"></script>
 <script src="https://tatt61880.github.io/kuin-web/src-noconflict/ace.js?2020-07-17"></script>
 <script src="https://tatt61880.github.io/kuin-web/src-noconflict/ext-language_tools.js?2020-07-17"></script>
 <script>
